@@ -24,9 +24,12 @@
         android:id="@+id/spinnerbranchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_below="@+id/textView1"
-        android:layout_marginTop="14dp" />
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="14dp"
+        android:background="#EDEAEA"
+        android:popupBackground="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown" />
 
     <TextView
         android:id="@+id/textView2"
@@ -42,7 +45,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView2"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="#EFEEEE" />
 
     <Button
         android:id="@+id/submitButton"

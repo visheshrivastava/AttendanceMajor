@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-84:12
-INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-84:12
-INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-84:12
-INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-84:12
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-91:12
+INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-91:12
+INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-91:12
+INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-91:12
 MERGED from [com.android.support:support-v4:28.0.0] /Users/visheshshrivastava/.gradle/caches/transforms-3/505797e4814d21f2dc18b818b7309840/transformed/support-v4-28.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-media-compat:28.0.0] /Users/visheshshrivastava/.gradle/caches/transforms-3/ecfe40b5b64b269434758ba80a7d9da3/transformed/support-media-compat-28.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-fragment:28.0.0] /Users/visheshshrivastava/.gradle/caches/transforms-3/9584b4d598315b794af35173214e76a9/transformed/support-fragment-28.0.0/AndroidManifest.xml:17:1-22:12
@@ -29,9 +29,9 @@ MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/visheshshrivastava/.
 MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/visheshshrivastava/.gradle/caches/transforms-3/77ad3c9b9262e6641eec7686d9236799/transformed/livedata-1.1.1/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/visheshshrivastava/.gradle/caches/transforms-3/f3f6f40178a0a499e88eae1fe5c74bd1/transformed/livedata-core-1.1.1/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.core:runtime:1.1.1] /Users/visheshshrivastava/.gradle/caches/transforms-3/3d5f5d66ab57faf98456681559d7ae76/transformed/runtime-1.1.1/AndroidManifest.xml:17:1-22:12
-INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-84:12
-INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-84:12
-INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-84:12
+INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-91:12
+INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-91:12
+INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:2:1-91:12
 	package
 		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:3:5-50
 		INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml
@@ -51,7 +51,7 @@ ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/Androi
 	android:name
 		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:7:22-77
 application
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:9:5-82:19
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:9:5-89:19
 MERGED from [com.android.support:support-compat:28.0.0] /Users/visheshshrivastava/.gradle/caches/transforms-3/01abf3def00b528e5c29d1fd1eb1ef25/transformed/support-compat-28.0.0/AndroidManifest.xml:22:5-94
 MERGED from [com.android.support:support-compat:28.0.0] /Users/visheshshrivastava/.gradle/caches/transforms-3/01abf3def00b528e5c29d1fd1eb1ef25/transformed/support-compat-28.0.0/AndroidManifest.xml:22:5-94
 MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/visheshshrivastava/.gradle/caches/transforms-3/d6e2fabc0cd6e5013b2348e028d475fb/transformed/versionedparcelable-28.0.0/AndroidManifest.xml:22:5-23:19
@@ -67,109 +67,121 @@ MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/visheshshriv
 	android:theme
 		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:14:9-40
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:10:10-74
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:10:9-73
 activity#com.android.attendance.activity.MainActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:15:9-24:20
-	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:18:13-45
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:15:9-23:20
 	android:exported
 		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:17:13-36
+	android:theme
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:18:13-59
 	android:name
 		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:16:13-72
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:19:13-23:29
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:19:13-22:29
 action#android.intent.action.MAIN
 ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:20:17-69
 	android:name
 		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:20:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:22:17-77
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:21:17-77
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:22:27-74
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:21:27-74
 activity#com.android.attendance.activity.LoginActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:25:10-28:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:24:9-27:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:27:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:26:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:26:13-73
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:25:13-73
 activity#com.android.attendance.activity.MenuActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:29:10-32:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:28:9-31:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:31:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:30:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:30:13-72
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:29:13-72
 activity#com.android.attendance.activity.AddFacultyActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:33:10-36:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:32:9-35:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:35:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:34:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:34:13-78
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:33:13-78
 activity#com.android.attendance.activity.AddStudentActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:37:9-40:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:36:9-39:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:39:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:38:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:38:13-78
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:37:13-78
 activity#com.android.attendance.activity.ViewFacultyActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:41:9-44:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:40:9-43:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:43:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:42:13-41
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:42:13-79
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:41:13-79
 activity#com.android.attendance.activity.ViewStudentActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:45:9-48:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:44:9-47:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:47:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:46:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:46:13-79
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:45:13-79
 activity#com.android.attendance.activity.TestActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:49:9-52:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:48:9-51:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:51:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:50:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:50:13-72
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:49:13-72
 activity#com.android.attendance.activity.ViewStudentByBranchYear
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:53:10-56:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:52:10-55:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:55:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:54:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:54:13-83
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:53:13-83
 activity#com.android.attendance.activity.AddAttandanceSessionActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:57:11-60:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:56:11-59:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:59:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:58:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:58:13-88
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:57:13-88
 activity#com.android.attendance.activity.AddAttendanceActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:61:10-64:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:60:10-63:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:63:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:62:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:62:13-81
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:61:13-81
 activity#com.android.attendance.activity.ViewAttendanceByFacultyActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:65:10-68:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:64:10-67:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:67:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:66:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:66:13-91
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:65:13-91
 activity#com.android.attendance.activity.ViewAttendancePerStudentActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:69:10-72:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:68:10-71:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:71:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:70:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:70:13-92
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:69:13-92
 activity#com.android.attendance.activity.EditAttendanceActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:73:9-76:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:72:9-75:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:75:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:74:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:74:13-82
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:73:13-82
 activity#com.android.attendance.activity.ViewShortAttendanceActivity
-ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:77:9-80:20
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:76:9-79:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:79:13-45
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:78:13-45
 	android:name
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:78:13-87
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:77:13-87
+activity#com.android.attendance.activity.FacultyRegistrationActivity
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:80:9-83:20
+	android:label
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:82:13-45
+	android:name
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:81:13-87
+activity#com.android.attendance.activity.ViewFacultyRegistrationsActivity
+ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:84:9-87:20
+	android:label
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:86:13-45
+	android:name
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:85:13-92
 uses-sdk
 INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml

@@ -18,7 +18,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 
 	// All Static variables
 	// Database Version
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2; // Increment this
 
 	// Database Name
 	private static final String DATABASE_NAME = "Attendance";
@@ -28,6 +28,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 	private static final String STUDENT_INFO_TABLE = "student_table";
 	private static final String ATTENDANCE_SESSION_TABLE = "attendance_session_table";
 	private static final String ATTENDANCE_TABLE = "attendance_table";
+	private static final String FACULTY_REGISTRATION_TABLE = "faculty_registration";
 
 
 	// Contacts Table Columns names
@@ -38,6 +39,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 	private static final String KEY_FACULTY_ADDRESS = "faculty_address";
 	private static final String KEY_FACULTY_USERNAME = "faculty_username";
 	private static final String KEY_FACULTY_PASSWORD = "faculty_password";
+	private static final String KEY_FACULTY_EMAIL = "faculty_email";
 
 	private static final String KEY_STUDENT_ID = "student_id";
 	private static final String KEY_STUDENT_FIRSTNAME = "student_firstname";
@@ -57,6 +59,9 @@ public class DBAdapter extends SQLiteOpenHelper {
 	private static final String KEY_SESSION_ID = "attendance_session_id";
 	private static final String KEY_ATTENDANCE_STUDENT_ID = "attendance_student_id";
 	private static final String KEY_ATTENDANCE_STATUS = "attendance_status";
+	private static final String KEY_FACULTY_REG_ID = "faculty_reg_id";
+	private static final String KEY_FACULTY_REG_STATUS = "faculty_reg_status";
+	private static final String KEY_FACULTY_MOBILENUMBER = "faculty_mobilenumber";
 
 
 	public DBAdapter(Context context) {
@@ -105,6 +110,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 				KEY_ATTENDANCE_STATUS + " TEXT " + ")";
 		Log.d("queryAttendance",queryAttendance );
 
+		ensureFacultyRegistrationTableExists();
 
 		try
 		{
@@ -122,15 +128,15 @@ public class DBAdapter extends SQLiteOpenHelper {
 
 
 	@Override
-	public void onUpgrade(SQLiteDatabase db, int arg1, int arg2) {
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		String queryFaculty="CREATE TABLE "+ FACULTY_INFO_TABLE +" (" +
 				KEY_FACULTY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-				KEY_FACULTY_FIRSTNAME + " TEXT, " + 
-				KEY_FACULTY_LASTNAME + " TEXT, " +
-				KEY_FACULTY_MO_NO + " TEXT, " +
-				KEY_FACULTY_ADDRESS + " TEXT," +
-				KEY_FACULTY_USERNAME + " TEXT," +
-				KEY_FACULTY_PASSWORD + " TEXT " + ")";
+					KEY_FACULTY_FIRSTNAME + " TEXT, " + 
+					KEY_FACULTY_LASTNAME + " TEXT, " +
+					KEY_FACULTY_MO_NO + " TEXT, " +
+					KEY_FACULTY_ADDRESS + " TEXT," +
+					KEY_FACULTY_USERNAME + " TEXT," +
+					KEY_FACULTY_PASSWORD + " TEXT " + ")";
 		Log.d("queryFaculty",queryFaculty);
 
 
@@ -174,6 +180,24 @@ public class DBAdapter extends SQLiteOpenHelper {
 		}		
 	}
 
+	public void ensureFacultyRegistrationTableExists() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		createFacultyRegistrationTable(db);
+	}
+
+	private void createFacultyRegistrationTable(SQLiteDatabase db) {
+		String CREATE_FACULTY_REGISTRATION_TABLE = "CREATE TABLE IF NOT EXISTS " + FACULTY_REGISTRATION_TABLE + "("
+				+ KEY_FACULTY_REG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+				+ KEY_FACULTY_FIRSTNAME + " TEXT,"
+				+ KEY_FACULTY_LASTNAME + " TEXT,"
+				+ KEY_FACULTY_MOBILENUMBER + " TEXT,"
+				+ KEY_FACULTY_ADDRESS + " TEXT,"
+				+ KEY_FACULTY_USERNAME + " TEXT,"
+				+ KEY_FACULTY_PASSWORD + " TEXT,"
+				+ KEY_FACULTY_REG_STATUS + " TEXT" + ")";
+		db.execSQL(CREATE_FACULTY_REGISTRATION_TABLE);
+	}
+
 	//facult crud
 	public void addFaculty(FacultyBean facultyBean) {
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -213,30 +237,27 @@ public class DBAdapter extends SQLiteOpenHelper {
 		return null;
 	}
 
-	public ArrayList<FacultyBean> getAllFaculty()
-	{
-		Log.d("in get all","in get all" );
-		ArrayList<FacultyBean> list = new ArrayList<FacultyBean>();
+	public ArrayList<FacultyBean> getAllFaculty() {
+		ArrayList<FacultyBean> list = new ArrayList<>();
+		String selectQuery = "SELECT * FROM " + FACULTY_INFO_TABLE;
+		
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
 
-		SQLiteDatabase db = this.getWritableDatabase();
-		String query = "SELECT * FROM faculty_table";
-		Cursor cursor = db.rawQuery(query, null);
-
-		if(cursor.moveToFirst()) 
-		{
-			do{
-				FacultyBean facultyBean = new FacultyBean();
-				facultyBean.setFaculty_id(Integer.parseInt(cursor.getString(0)));
-				facultyBean.setFaculty_firstname(cursor.getString(1));
-				facultyBean.setFaculty_lastname(cursor.getString(2));
-				facultyBean.setFaculty_mobilenumber(cursor.getString(3));
-				facultyBean.setFaculty_address(cursor.getString(4));
-				facultyBean.setFaculty_username(cursor.getString(5));
-				facultyBean.setFaculty_password(cursor.getString(6));
-				list.add(facultyBean);
-
-			}while(cursor.moveToNext());
+		if (cursor.moveToFirst()) {
+			do {
+				FacultyBean faculty = new FacultyBean();
+				faculty.setFaculty_id(cursor.getInt(0));
+				faculty.setFaculty_firstname(cursor.getString(1));
+				faculty.setFaculty_lastname(cursor.getString(2));
+				faculty.setFaculty_mobilenumber(cursor.getString(3));
+				faculty.setFaculty_address(cursor.getString(4));
+				faculty.setFaculty_username(cursor.getString(5));
+				faculty.setFaculty_password(cursor.getString(6));
+				list.add(faculty);
+			} while (cursor.moveToNext());
 		}
+		cursor.close();
 		return list;
 	}
 
@@ -303,6 +324,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 		{
 			do{
 				StudentBean studentBean = new StudentBean();
+				
 				studentBean.setStudent_id(Integer.parseInt(cursor.getString(0)));
 				studentBean.setStudent_firstname(cursor.getString(1));
 				studentBean.setStudent_lastname(cursor.getString(2));
@@ -808,5 +830,74 @@ public class DBAdapter extends SQLiteOpenHelper {
 		}
 		cursor.close();
 		return list;
+	}
+
+	public long addFacultyRegistrationRequest(FacultyBean facultyBean) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_FACULTY_FIRSTNAME, facultyBean.getFaculty_firstname());
+		values.put(KEY_FACULTY_LASTNAME, facultyBean.getFaculty_lastname());
+		values.put(KEY_FACULTY_MOBILENUMBER, facultyBean.getFaculty_mobilenumber());
+		values.put(KEY_FACULTY_ADDRESS, facultyBean.getFaculty_address());
+		values.put(KEY_FACULTY_USERNAME, facultyBean.getFaculty_username());
+		values.put(KEY_FACULTY_PASSWORD, facultyBean.getFaculty_password());
+		values.put(KEY_FACULTY_REG_STATUS, "pending");
+
+		long result = db.insert(FACULTY_REGISTRATION_TABLE, null, values);
+		db.close();
+		return result;
+	}
+
+	public ArrayList<FacultyBean> getPendingFacultyRegistrations() {
+		ArrayList<FacultyBean> list = new ArrayList<>();
+		String selectQuery = "SELECT * FROM " + FACULTY_REGISTRATION_TABLE + " WHERE " + KEY_FACULTY_REG_STATUS + "='pending'";
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		if (cursor.moveToFirst()) {
+			do {
+				FacultyBean facultyBean = new FacultyBean();
+				facultyBean.setFaculty_id(cursor.getInt(0));
+				facultyBean.setFaculty_firstname(cursor.getString(1));
+				facultyBean.setFaculty_lastname(cursor.getString(2));
+				facultyBean.setFaculty_email(cursor.getString(3));
+				facultyBean.setFaculty_password(cursor.getString(4));
+				list.add(facultyBean);
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		return list;
+	}
+
+	public void approveFacultyRegistration(int facultyId) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		
+		// First, get the faculty registration data
+		String selectQuery = "SELECT * FROM " + FACULTY_REGISTRATION_TABLE + 
+							 " WHERE " + KEY_FACULTY_REG_ID + " = " + facultyId;
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		
+		if (cursor.moveToFirst()) {
+			// Create ContentValues for insertion into main faculty table
+			ContentValues values = new ContentValues();
+			values.put(KEY_FACULTY_FIRSTNAME, cursor.getString(cursor.getColumnIndex(KEY_FACULTY_FIRSTNAME)));
+			values.put(KEY_FACULTY_LASTNAME, cursor.getString(cursor.getColumnIndex(KEY_FACULTY_LASTNAME)));
+			values.put(KEY_FACULTY_MO_NO, cursor.getString(cursor.getColumnIndex(KEY_FACULTY_MOBILENUMBER)));
+			values.put(KEY_FACULTY_ADDRESS, cursor.getString(cursor.getColumnIndex(KEY_FACULTY_ADDRESS)));
+			values.put(KEY_FACULTY_USERNAME, cursor.getString(cursor.getColumnIndex(KEY_FACULTY_USERNAME)));
+			values.put(KEY_FACULTY_PASSWORD, cursor.getString(cursor.getColumnIndex(KEY_FACULTY_PASSWORD)));
+
+			// Insert into main faculty table
+			db.insert(FACULTY_INFO_TABLE, null, values);
+
+			// Delete from registration table
+			db.delete(FACULTY_REGISTRATION_TABLE, KEY_FACULTY_REG_ID + " = ?", 
+					  new String[]{String.valueOf(facultyId)});
+		}
+		
+		cursor.close();
+		db.close();
 	}
 }
