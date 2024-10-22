@@ -70,10 +70,12 @@
         android:id="@+id/spinnerloginas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView2"
         android:layout_alignLeft="@+id/textView2"
+        android:layout_alignBottom="@+id/textView2"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginBottom="32dp"
+        android:popupBackground="@drawable/clg"
+        android:spinnerMode="dialog" />
 
     <Button
         android:id="@+id/buttonlogin"

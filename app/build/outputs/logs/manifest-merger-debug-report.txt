@@ -113,7 +113,7 @@ ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/Androi
 activity#com.android.attendance.activity.ViewFacultyActivity
 ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:40:9-43:20
 	android:label
-		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:42:13-41
+		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:42:13-45
 	android:name
 		ADDED from /Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:41:13-79
 activity#com.android.attendance.activity.ViewStudentActivity

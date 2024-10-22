@@ -244,6 +244,8 @@ public class DBAdapter extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
+		Log.d("DBAdapter", "Faculty count: " + cursor.getCount());
+
 		if (cursor.moveToFirst()) {
 			do {
 				FacultyBean faculty = new FacultyBean();
@@ -255,20 +257,19 @@ public class DBAdapter extends SQLiteOpenHelper {
 				faculty.setFaculty_username(cursor.getString(5));
 				faculty.setFaculty_password(cursor.getString(6));
 				list.add(faculty);
+				
+				Log.d("DBAdapter", "Faculty added: " + faculty.getFaculty_firstname() + " " + faculty.getFaculty_lastname());
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
 		return list;
 	}
 
-	public void deleteFaculty(int facultyId) {
+	public boolean deleteFaculty(int facultyId) {
 		SQLiteDatabase db = this.getWritableDatabase();
-
-		String query = "DELETE FROM faculty_table WHERE faculty_id="+facultyId ;
-
-		Log.d("query", query);
-		db.execSQL(query);
+		int result = db.delete(FACULTY_INFO_TABLE, KEY_FACULTY_ID + " = ?", new String[] { String.valueOf(facultyId) });
 		db.close();
+		return result > 0;
 	}
 
 	//student crud
@@ -876,7 +877,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 		
 		// First, get the faculty registration data
 		String selectQuery = "SELECT * FROM " + FACULTY_REGISTRATION_TABLE + 
-							 " WHERE " + KEY_FACULTY_REG_ID + " = " + facultyId;
+							" WHERE " + KEY_FACULTY_REG_ID + " = " + facultyId;
 		Cursor cursor = db.rawQuery(selectQuery, null);
 		
 		if (cursor.moveToFirst()) {
@@ -890,11 +891,13 @@ public class DBAdapter extends SQLiteOpenHelper {
 			values.put(KEY_FACULTY_PASSWORD, cursor.getString(cursor.getColumnIndex(KEY_FACULTY_PASSWORD)));
 
 			// Insert into main faculty table
-			db.insert(FACULTY_INFO_TABLE, null, values);
-
-			// Delete from registration table
-			db.delete(FACULTY_REGISTRATION_TABLE, KEY_FACULTY_REG_ID + " = ?", 
-					  new String[]{String.valueOf(facultyId)});
+			long newRowId = db.insert(FACULTY_INFO_TABLE, null, values);
+			
+			if (newRowId != -1) {
+				// If insertion was successful, delete from registration table
+				db.delete(FACULTY_REGISTRATION_TABLE, KEY_FACULTY_REG_ID + " = ?", 
+						  new String[]{String.valueOf(facultyId)});
+			}
 		}
 		
 		cursor.close();
