@@ -24,6 +24,8 @@ public class MenuActivity extends Activity {
 	Button logout;
 	Button attendancePerStudent;
 
+	String userRole;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -106,6 +108,22 @@ public class MenuActivity extends Activity {
 			}
 		});
 		
+		// Get the user role from the intent
+		userRole = getIntent().getStringExtra("role");
+
+		if ("admin".equals(userRole)) {
+			Button viewFacultyRegistrationsButton = findViewById(R.id.viewFacultyRegistrationsButton);
+			if (viewFacultyRegistrationsButton != null) {
+				viewFacultyRegistrationsButton.setVisibility(View.VISIBLE);
+				viewFacultyRegistrationsButton.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(MenuActivity.this, ViewFacultyRegistrationsActivity.class);
+						startActivity(intent);
+					}
+				});
+			}
+		}
 
 	}
 

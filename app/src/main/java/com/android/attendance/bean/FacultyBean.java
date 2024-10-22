@@ -9,6 +9,7 @@ public class FacultyBean {
 	private String faculty_address;
 	private String faculty_username;
 	private String faculty_password;
+	private String faculty_email;
 	public int getFaculty_id() {
 		return faculty_id;
 	}
@@ -50,6 +51,12 @@ public class FacultyBean {
 	}
 	public void setFaculty_password(String faculty_password) {
 		this.faculty_password = faculty_password;
+	}
+	public String getFaculty_email() {
+		return faculty_email;
+	}
+	public void setFaculty_email(String faculty_email) {
+		this.faculty_email = faculty_email;
 	}
 	
 	

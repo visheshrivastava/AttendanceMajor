@@ -1,6 +1,8 @@
 package com.android.attendance.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -101,13 +103,10 @@ public class LoginActivity extends Activity {
 					}
 					else
 					{
-						if(user_name.equals("admin") & pass_word.equals("admin123")){
-						Intent intent =new Intent(LoginActivity.this,MenuActivity.class);
+						Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+						intent.putExtra("role", userrole);
 						startActivity(intent);
 						Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
-						}else{
-							Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT).show();
-						}
 					}
 				}
 				
@@ -140,6 +139,26 @@ public class LoginActivity extends Activity {
 					}
 				}
 
+				if (userrole.equals("faculty")) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+					builder.setTitle("Faculty Login");
+					builder.setMessage("Are you an existing user?");
+					builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// Proceed with existing login flow
+						}
+					});
+					builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// Redirect to faculty registration
+							Intent intent = new Intent(LoginActivity.this, FacultyRegistrationActivity.class);
+							startActivity(intent);
+						}
+					});
+					builder.show();
+				}
 
 			}
 		});

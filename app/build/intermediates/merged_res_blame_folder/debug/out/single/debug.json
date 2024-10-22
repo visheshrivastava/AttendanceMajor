@@ -12,20 +12,20 @@
         "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/activity_edit_attendance.xml"
     },
     {
-        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_test_layout.xml.flat",
-        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/test_layout.xml"
-    },
-    {
         "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_spinner_dropdown_item.xml.flat",
         "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/spinner_dropdown_item.xml"
     },
     {
-        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/drawable-hdpi_roundedbutton.xml.flat",
-        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/drawable-hdpi/roundedbutton.xml"
+        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_test_layout.xml.flat",
+        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/test_layout.xml"
     },
     {
         "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_view_attendance_list.xml.flat",
         "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/view_attendance_list.xml"
+    },
+    {
+        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/drawable-hdpi_roundedbutton.xml.flat",
+        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/drawable-hdpi/roundedbutton.xml"
     },
     {
         "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/menu_main.xml.flat",
@@ -48,8 +48,16 @@
         "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/drawable-hdpi/clg.jpg"
     },
     {
+        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_faculty_registration.xml.flat",
+        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/faculty_registration.xml"
+    },
+    {
         "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_spinner_item.xml.flat",
         "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/spinner_item.xml"
+    },
+    {
+        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_view_faculty_registrations.xml.flat",
+        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/view_faculty_registrations.xml"
     },
     {
         "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_addstudent.xml.flat",

@@ -86,6 +86,7 @@ id action_image
 id action_settings
 id action_text
 id actions
+id addressEditText
 id all
 id async
 id attendanceListView
@@ -127,6 +128,7 @@ id end_padder
 id fill
 id fill_horizontal
 id fill_vertical
+id firstNameEditText
 id forever
 id icon
 id icon_group
@@ -137,10 +139,11 @@ id label
 id labelA
 id labelAttendance
 id labelAttendancePerStudent
-id labelF
+id lastNameEditText
 id left
 id line1
 id line3
+id listView
 id listview
 id media_actions
 id none
@@ -148,7 +151,11 @@ id normal
 id notification_background
 id notification_main_column
 id notification_main_column_container
+id passwordEditText
+id phoneEditText
 id radioGroup
+id registerButton
+id registrationsListView
 id right
 id right_icon
 id right_side
@@ -185,7 +192,9 @@ id time
 id title
 id top
 id updateAttendanceButton
+id usernameEditText
 id viewAttendancebutton
+id viewFacultyRegistrationsButton
 id viewShortAttendanceButton
 id viewTotalAttendanceButton
 integer cancel_button_image_alpha
@@ -198,6 +207,7 @@ layout add_attandance
 layout add_student_attendance
 layout addfaculty
 layout addstudent
+layout faculty_registration
 layout listview_main
 layout login
 layout menu
@@ -223,6 +233,7 @@ layout test_main
 layout view_attendance_list
 layout view_attendance_list_per_student
 layout view_faculty_list
+layout view_faculty_registrations
 layout view_student_list
 layout viewstudent
 menu main

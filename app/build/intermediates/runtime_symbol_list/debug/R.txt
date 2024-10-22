@@ -85,6 +85,7 @@ int id action_image 0x7f05000a
 int id action_settings 0x7f05000b
 int id action_text 0x7f05000c
 int id actions 0x7f05000d
+int id addressEditText 0x7f05007f
 int id all 0x7f05000e
 int id async 0x7f05000f
 int id attendanceListView 0x7f050074
@@ -126,6 +127,7 @@ int id end_padder 0x7f05002e
 int id fill 0x7f05002f
 int id fill_horizontal 0x7f050030
 int id fill_vertical 0x7f050031
+int id firstNameEditText 0x7f050079
 int id forever 0x7f050032
 int id icon 0x7f050033
 int id icon_group 0x7f050034
@@ -136,10 +138,11 @@ int id label 0x7f050037
 int id labelA 0x7f050038
 int id labelAttendance 0x7f050039
 int id labelAttendancePerStudent 0x7f05003a
-int id labelF 0x7f05003b
+int id lastNameEditText 0x7f05007a
 int id left 0x7f05003c
 int id line1 0x7f05003d
 int id line3 0x7f05003e
+int id listView 0x7f050072
 int id listview 0x7f05003f
 int id media_actions 0x7f050040
 int id none 0x7f050041
@@ -147,7 +150,11 @@ int id normal 0x7f050042
 int id notification_background 0x7f050043
 int id notification_main_column 0x7f050044
 int id notification_main_column_container 0x7f050045
+int id passwordEditText 0x7f05007b
+int id phoneEditText 0x7f050080
 int id radioGroup 0x7f050046
+int id registerButton 0x7f05007c
+int id registrationsListView 0x7f05007d
 int id right 0x7f050047
 int id right_icon 0x7f050048
 int id right_side 0x7f050049
@@ -184,7 +191,9 @@ int id time 0x7f050064
 int id title 0x7f050065
 int id top 0x7f050066
 int id updateAttendanceButton 0x7f050075
+int id usernameEditText 0x7f050081
 int id viewAttendancebutton 0x7f050067
+int id viewFacultyRegistrationsButton 0x7f05007e
 int id viewShortAttendanceButton 0x7f05006f
 int id viewTotalAttendanceButton 0x7f050068
 int integer cancel_button_image_alpha 0x7f060000
@@ -197,6 +206,7 @@ int layout add_attandance 0x7f070002
 int layout add_student_attendance 0x7f070003
 int layout addfaculty 0x7f070004
 int layout addstudent 0x7f070005
+int layout faculty_registration 0x7f070024
 int layout listview_main 0x7f070006
 int layout login 0x7f070007
 int layout menu 0x7f070008
@@ -222,6 +232,7 @@ int layout test_main 0x7f07001b
 int layout view_attendance_list 0x7f07001c
 int layout view_attendance_list_per_student 0x7f07001d
 int layout view_faculty_list 0x7f07001e
+int layout view_faculty_registrations 0x7f070025
 int layout view_student_list 0x7f07001f
 int layout viewstudent 0x7f070020
 int menu main 0x7f080000

@@ -23,7 +23,7 @@
         <activity
             android:name="com.android.attendance.activity.MainActivity"
             android:exported="true"
-            android:label="@string/app_name" >
+            android:theme="@android:style/Theme.NoDisplay" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -84,6 +84,14 @@
         </activity>
         <activity
             android:name="com.android.attendance.activity.ViewShortAttendanceActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.android.attendance.activity.FacultyRegistrationActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.android.attendance.activity.ViewFacultyRegistrationsActivity"
             android:label="@string/app_name" >
         </activity>
     </application>

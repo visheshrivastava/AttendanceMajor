@@ -15,9 +15,9 @@
 11-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:7:22-77
 12
 13    <application
-13-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:9:5-82:19
+13-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:9:5-89:19
 14        android:name="com.android.attendance.context.ApplicationContext"
-14-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:10:10-74
+14-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:10:9-73
 15        android:allowBackup="true"
 15-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:11:9-35
 16        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
@@ -32,122 +32,136 @@
 22        android:theme="@style/AppTheme" >
 22-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:14:9-40
 23        <activity
-23-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:15:9-24:20
+23-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:15:9-23:20
 24            android:name="com.android.attendance.activity.MainActivity"
 24-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:16:13-72
 25            android:exported="true"
 25-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:17:13-36
-26            android:label="@string/app_name" >
-26-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:18:13-45
+26            android:theme="@android:style/Theme.NoDisplay" >
+26-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:18:13-59
 27            <intent-filter>
-27-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:19:13-23:29
+27-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:19:13-22:29
 28                <action android:name="android.intent.action.MAIN" />
 28-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:20:17-69
 28-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:20:25-66
 29
 30                <category android:name="android.intent.category.LAUNCHER" />
-30-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:22:17-77
-30-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:22:27-74
+30-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:21:17-77
+30-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:21:27-74
 31            </intent-filter>
 32        </activity>
 33        <activity
-33-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:25:10-28:20
+33-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:24:9-27:20
 34            android:name="com.android.attendance.activity.LoginActivity"
-34-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:26:13-73
+34-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:25:13-73
 35            android:label="@string/app_name" >
-35-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:27:13-45
+35-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:26:13-45
 36        </activity>
 37        <activity
-37-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:29:10-32:20
+37-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:28:9-31:20
 38            android:name="com.android.attendance.activity.MenuActivity"
-38-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:30:13-72
+38-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:29:13-72
 39            android:label="@string/app_name" >
-39-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:31:13-45
+39-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:30:13-45
 40        </activity>
 41        <activity
-41-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:33:10-36:20
+41-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:32:9-35:20
 42            android:name="com.android.attendance.activity.AddFacultyActivity"
-42-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:34:13-78
+42-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:33:13-78
 43            android:label="@string/app_name" >
-43-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:35:13-45
+43-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:34:13-45
 44        </activity>
 45        <activity
-45-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:37:9-40:20
+45-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:36:9-39:20
 46            android:name="com.android.attendance.activity.AddStudentActivity"
-46-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:38:13-78
+46-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:37:13-78
 47            android:label="@string/app_name" >
-47-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:39:13-45
+47-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:38:13-45
 48        </activity>
 49        <activity
-49-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:41:9-44:20
+49-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:40:9-43:20
 50            android:name="com.android.attendance.activity.ViewFacultyActivity"
-50-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:42:13-79
+50-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:41:13-79
 51            android:label="@string/app_name" >
-51-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:43:13-45
+51-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:42:13-45
 52        </activity>
 53        <activity
-53-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:45:9-48:20
+53-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:44:9-47:20
 54            android:name="com.android.attendance.activity.ViewStudentActivity"
-54-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:46:13-79
+54-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:45:13-79
 55            android:label="@string/app_name" >
-55-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:47:13-45
+55-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:46:13-45
 56        </activity>
 57        <activity
-57-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:49:9-52:20
+57-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:48:9-51:20
 58            android:name="com.android.attendance.activity.TestActivity"
-58-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:50:13-72
+58-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:49:13-72
 59            android:label="@string/app_name" >
-59-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:51:13-45
+59-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:50:13-45
 60        </activity>
 61        <activity
-61-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:53:10-56:20
+61-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:52:10-55:20
 62            android:name="com.android.attendance.activity.ViewStudentByBranchYear"
-62-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:54:13-83
+62-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:53:13-83
 63            android:label="@string/app_name" >
-63-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:55:13-45
+63-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:54:13-45
 64        </activity>
 65        <activity
-65-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:57:11-60:20
+65-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:56:11-59:20
 66            android:name="com.android.attendance.activity.AddAttandanceSessionActivity"
-66-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:58:13-88
+66-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:57:13-88
 67            android:label="@string/app_name" >
-67-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:59:13-45
+67-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:58:13-45
 68        </activity>
 69        <activity
-69-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:61:10-64:20
+69-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:60:10-63:20
 70            android:name="com.android.attendance.activity.AddAttendanceActivity"
-70-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:62:13-81
+70-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:61:13-81
 71            android:label="@string/app_name" >
-71-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:63:13-45
+71-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:62:13-45
 72        </activity>
 73        <activity
-73-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:65:10-68:20
+73-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:64:10-67:20
 74            android:name="com.android.attendance.activity.ViewAttendanceByFacultyActivity"
-74-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:66:13-91
+74-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:65:13-91
 75            android:label="@string/app_name" >
-75-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:67:13-45
+75-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:66:13-45
 76        </activity>
 77        <activity
-77-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:69:10-72:20
+77-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:68:10-71:20
 78            android:name="com.android.attendance.activity.ViewAttendancePerStudentActivity"
-78-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:70:13-92
+78-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:69:13-92
 79            android:label="@string/app_name" >
-79-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:71:13-45
+79-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:70:13-45
 80        </activity>
 81        <activity
-81-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:73:9-76:20
+81-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:72:9-75:20
 82            android:name="com.android.attendance.activity.EditAttendanceActivity"
-82-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:74:13-82
+82-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:73:13-82
 83            android:label="@string/app_name" >
-83-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:75:13-45
+83-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:74:13-45
 84        </activity>
 85        <activity
-85-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:77:9-80:20
+85-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:76:9-79:20
 86            android:name="com.android.attendance.activity.ViewShortAttendanceActivity"
-86-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:78:13-87
+86-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:77:13-87
 87            android:label="@string/app_name" >
-87-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:79:13-45
+87-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:78:13-45
 88        </activity>
-89    </application>
-90
-91</manifest>
+89        <activity
+89-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:80:9-83:20
+90            android:name="com.android.attendance.activity.FacultyRegistrationActivity"
+90-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:81:13-87
+91            android:label="@string/app_name" >
+91-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:82:13-45
+92        </activity>
+93        <activity
+93-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:84:9-87:20
+94            android:name="com.android.attendance.activity.ViewFacultyRegistrationsActivity"
+94-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:85:13-92
+95            android:label="@string/app_name" >
+95-->/Users/visheshshrivastava/Downloads/Major Project/app/src/main/AndroidManifest.xml:86:13-45
+96        </activity>
+97    </application>
+98
+99</manifest>

@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-         android:name="com.android.attendance.context.ApplicationContext"
+        android:name="com.android.attendance.context.ApplicationContext"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -15,22 +15,21 @@
         <activity
             android:name="com.android.attendance.activity.MainActivity"
             android:exported="true"
-            android:label="@string/app_name" >
+            android:theme="@android:style/Theme.NoDisplay" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-         <activity
+        <activity
             android:name="com.android.attendance.activity.LoginActivity"
             android:label="@string/app_name" >
         </activity>
-         <activity
+        <activity
             android:name="com.android.attendance.activity.MenuActivity"
             android:label="@string/app_name" >
         </activity>
-         <activity
+        <activity
             android:name="com.android.attendance.activity.AddFacultyActivity"
             android:label="@string/app_name" >
         </activity>
@@ -76,6 +75,14 @@
         </activity>
         <activity
             android:name="com.android.attendance.activity.ViewShortAttendanceActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.android.attendance.activity.FacultyRegistrationActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.android.attendance.activity.ViewFacultyRegistrationsActivity"
             android:label="@string/app_name" >
         </activity>
         

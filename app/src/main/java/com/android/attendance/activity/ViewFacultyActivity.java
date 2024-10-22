@@ -1,16 +1,12 @@
 package com.android.attendance.activity;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -19,102 +15,73 @@ import com.android.attendance.bean.FacultyBean;
 import com.android.attendance.db.DBAdapter;
 import com.example.androidattendancesystem.R;
 
+import java.util.ArrayList;
+
 public class ViewFacultyActivity extends Activity {
 
-	ArrayList<FacultyBean> facultyBeanList;
-	private ListView listView ;  
+	private ListView listView;
 	private ArrayAdapter<String> listAdapter;
+	private ArrayList<FacultyBean> facultyList;
+	private DBAdapter dbAdapter;
 
-	DBAdapter dbAdapter = new DBAdapter(this);
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.__listview_main);
+		setContentView(R.layout.view_faculty_list);
 
-		listView=(ListView)findViewById(R.id.listview);
-		final ArrayList<String> facultyList = new ArrayList<String>();
+		listView = findViewById(R.id.listView);
+		dbAdapter = new DBAdapter(this);
+		
+		loadFacultyList();
 
-		facultyBeanList=dbAdapter.getAllFaculty();
-
-		for(FacultyBean facultyBean : facultyBeanList)
-		{
-			String users = " FirstName: " + facultyBean.getFaculty_firstname()+"\nLastname:"+facultyBean.getFaculty_lastname();
-				
-			facultyList.add(users);
-			Log.d("users: ", users); 
-
-		}
-
-		listAdapter = new ArrayAdapter<String>(this, R.layout.view_faculty_list, R.id.labelF, facultyList);
-		listView.setAdapter( listAdapter ); 
-
-		listView.setOnItemLongClickListener(new OnItemLongClickListener() {
-
+		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-					final int position, long arg3) {
-
-
-
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ViewFacultyActivity.this);
-
-				alertDialogBuilder.setTitle(getTitle()+"decision");
-				alertDialogBuilder.setMessage("Are you sure?");
-
-				alertDialogBuilder.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,int id) {
-
-						facultyList.remove(position);
-						listAdapter.notifyDataSetChanged();
-						listAdapter.notifyDataSetInvalidated();   
-
-						dbAdapter.deleteFaculty(facultyBeanList.get(position).getFaculty_id());
-						facultyBeanList=dbAdapter.getAllFaculty();
-
-						for(FacultyBean facultyBean : facultyBeanList)
-						{
-							String users = " FirstName: " + facultyBean.getFaculty_firstname()+"\nLastname:"+facultyBean.getFaculty_lastname();
-							facultyList.add(users);
-							Log.d("users: ", users); 
-
-						}
-						
-					}
-					
-				});
-				alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,int id) {
-						// cancel the alert box and put a Toast to the user
-						dialog.cancel();
-						Toast.makeText(getApplicationContext(), "You choose cancel", 
-								Toast.LENGTH_LONG).show();
-					}
-				});
-
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				// show alert
-				alertDialog.show();
-
-
-
-
-
-				return false;
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				FacultyBean selectedFaculty = facultyList.get(position);
+				showDeleteConfirmationDialog(selectedFaculty);
+				return true;
 			}
 		});
-
-
-
-
 	}
 
+	private void loadFacultyList() {
+		facultyList = dbAdapter.getAllFaculty();
 
+		Log.d("ViewFacultyActivity", "Faculty list size: " + facultyList.size());
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+		ArrayList<String> facultyStringList = new ArrayList<>();
+		for (FacultyBean faculty : facultyList) {
+			String facultyName = faculty.getFaculty_firstname() + " " + faculty.getFaculty_lastname();
+			facultyStringList.add(facultyName);
+			Log.d("ViewFacultyActivity", "Added faculty: " + facultyName);
+		}
+
+		listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, facultyStringList);
+		listView.setAdapter(listAdapter);
 	}
 
+	private void showDeleteConfirmationDialog(final FacultyBean faculty) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Delete Faculty");
+		builder.setMessage("Are you sure you want to delete " + faculty.getFaculty_firstname() + " " + faculty.getFaculty_lastname() + "?");
+		builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				deleteFaculty(faculty);
+				dialog.dismiss();
+			}
+		});
+		builder.setNegativeButton("Cancel", null);
+		builder.show();
+	}
+
+	private void deleteFaculty(FacultyBean faculty) {
+		boolean success = dbAdapter.deleteFaculty(faculty.getFaculty_id());
+		if (success) {
+			Toast.makeText(this, "Faculty deleted successfully", Toast.LENGTH_SHORT).show();
+			loadFacultyList(); // Reload the list
+		} else {
+			Toast.makeText(this, "Failed to delete faculty", Toast.LENGTH_SHORT).show();
+		}
+	}
 }
