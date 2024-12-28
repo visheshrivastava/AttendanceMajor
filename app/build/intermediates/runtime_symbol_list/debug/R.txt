@@ -1,3 +1,5 @@
+int array branches_array 0x7f0c0001
+int array years_array 0x7f0c0002
 int attr alpha 0x7f010000
 int attr coordinatorLayoutStyle 0x7f010001
 int attr font 0x7f010002
@@ -75,6 +77,7 @@ int id AbsentradioButton 0x7f050000
 int id Cancel_Button 0x7f050001
 int id DateEditText 0x7f050002
 int id DateImageButton 0x7f050003
+int id ImportButton 0x7f05008b
 int id MessageforRegister 0x7f050004
 int id PresentradioButton 0x7f050005
 int id RegisterButton 0x7f050006
@@ -112,6 +115,7 @@ int id clip_horizontal 0x7f050023
 int id clip_vertical 0x7f050024
 int id dateLabel 0x7f050076
 int id editAttendanceButton 0x7f050071
+int id editTextEnrollment 0x7f050088
 int id editTextFirstName 0x7f050025
 int id editTextLastName 0x7f050026
 int id editTextPassword 0x7f050027
@@ -134,9 +138,7 @@ int id icon_group 0x7f050034
 int id importCsvButton 0x7f050070
 int id info 0x7f050035
 int id italic 0x7f050036
-int id label 0x7f050037
 int id labelA 0x7f050038
-int id labelAttendance 0x7f050039
 int id labelAttendancePerStudent 0x7f05003a
 int id lastNameEditText 0x7f05007a
 int id left 0x7f05003c
@@ -151,6 +153,7 @@ int id notification_background 0x7f050043
 int id notification_main_column 0x7f050044
 int id notification_main_column_container 0x7f050045
 int id passwordEditText 0x7f05007b
+int id passwordLabel 0x7f050090
 int id phoneEditText 0x7f050080
 int id radioGroup 0x7f050046
 int id registerButton 0x7f05007c
@@ -158,9 +161,14 @@ int id registrationsListView 0x7f05007d
 int id right 0x7f050047
 int id right_icon 0x7f050048
 int id right_side 0x7f050049
+int id roleLabel 0x7f050091
+int id sessionLabel 0x7f050092
 int id shortAttendanceListView 0x7f050077
 int id spinner1 0x7f05004a
+int id spinnerBranch 0x7f05008c
 int id spinnerSE 0x7f05004b
+int id spinnerSession 0x7f05008f
+int id spinnerYear 0x7f05008d
 int id spinnerbranchView 0x7f05004c
 int id spinnerdept 0x7f05004d
 int id spinnerloginas 0x7f05004e
@@ -171,6 +179,8 @@ int id startDateEditText 0x7f05006c
 int id startDateLabel 0x7f05006e
 int id status_bar_latest_event_content 0x7f050052
 int id studentCheckBox 0x7f050053
+int id studentNameTextView 0x7f050089
+int id subjectEditText 0x7f050087
 int id submitButton 0x7f050054
 int id tag_transition_group 0x7f050055
 int id tag_unhandled_key_event_manager 0x7f050056
@@ -179,7 +189,6 @@ int id text 0x7f050058
 int id text2 0x7f050059
 int id textView1 0x7f05005a
 int id textView2 0x7f05005b
-int id textView3 0x7f05005c
 int id textViewEmail 0x7f05005d
 int id textViewFirstName 0x7f05005e
 int id textViewFormName 0x7f05005f
@@ -189,9 +198,12 @@ int id textViewPhone 0x7f050062
 int id textViewUserName 0x7f050063
 int id time 0x7f050064
 int id title 0x7f050065
+int id titleText 0x7f050094
+int id titleTextView 0x7f05008a
 int id top 0x7f050066
 int id updateAttendanceButton 0x7f050075
 int id usernameEditText 0x7f050081
+int id usernameLabel 0x7f050093
 int id viewAttendancebutton 0x7f050067
 int id viewFacultyRegistrationsButton 0x7f05007e
 int id viewShortAttendanceButton 0x7f05006f
@@ -203,6 +215,7 @@ int layout activity_edit_attendance 0x7f070022
 int layout activity_main 0x7f070001
 int layout activity_view_short_attendance 0x7f070023
 int layout add_attandance 0x7f070002
+int layout add_attendance 0x7f07002a
 int layout add_student_attendance 0x7f070003
 int layout addfaculty 0x7f070004
 int layout addstudent 0x7f070005
@@ -227,12 +240,14 @@ int layout notification_template_part_chronometer 0x7f070016
 int layout notification_template_part_time 0x7f070017
 int layout spinner_dropdown_item 0x7f070018
 int layout spinner_item 0x7f070019
+int layout student_list_item 0x7f070027
 int layout test_layout 0x7f07001a
 int layout test_main 0x7f07001b
 int layout view_attendance_list 0x7f07001c
 int layout view_attendance_list_per_student 0x7f07001d
 int layout view_faculty_list 0x7f07001e
 int layout view_faculty_registrations 0x7f070025
+int layout view_student_by_branch_year 0x7f070028
 int layout view_student_list 0x7f07001f
 int layout viewstudent 0x7f070020
 int menu main 0x7f080000

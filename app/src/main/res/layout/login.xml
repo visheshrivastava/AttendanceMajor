@@ -1,89 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/clg"
-    tools:context=".MainActivity" >
+    android:padding="16dp">
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="82dp"
-        android:layout_marginTop="43dp"
-        android:text="Login here.."
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <EditText
-        android:id="@+id/editTextpassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView3"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/roundedtextview"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editTextusername"
-        android:layout_below="@+id/editTextusername"
-        android:layout_marginTop="14dp"
-        android:text="Password"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editTextusername"
-        android:layout_below="@+id/textView1"
-        android:layout_marginTop="110dp"
-        android:text="Username"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/editTextusername"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/roundedtextview"
-        android:ems="10"
-        android:hint="Username">
+        android:layout_marginTop="50dp"
+        android:text="Login"
+        android:textColor="#ffffff"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
-        <requestFocus />
-    </EditText>
+    <!-- Role Spinner -->
+    <TextView
+        android:id="@+id/roleLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleTextView"
+        android:layout_marginTop="50dp"
+        android:text="Select Role"
+        android:textColor="#ffffff" />
 
     <Spinner
         android:id="@+id/spinnerloginas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/roleLabel"
+        android:layout_marginTop="8dp"
+        android:background="#ffffff"
+        android:padding="8dp" />
+
+    <!-- Session Spinner -->
+    <TextView
+        android:id="@+id/sessionLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_alignBottom="@+id/textView2"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="32dp"
-        android:popupBackground="@drawable/clg"
-        android:spinnerMode="dialog" />
+        android:layout_below="@id/spinnerloginas"
+        android:layout_marginTop="20dp"
+        android:text="Select Session"
+        android:textColor="#ffffff" />
 
+    <Spinner
+        android:id="@+id/spinnerSession"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sessionLabel"
+        android:layout_marginTop="8dp"
+        android:background="#ffffff"
+        android:padding="8dp" />
+
+    <!-- Username -->
+    <TextView
+        android:id="@+id/usernameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerSession"
+        android:layout_marginTop="20dp"
+        android:text="Username"
+        android:textColor="#ffffff" />
+
+    <EditText
+        android:id="@+id/editTextusername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/usernameLabel"
+        android:layout_marginTop="8dp"
+        android:background="#ffffff"
+        android:hint="Enter Username"
+        android:padding="8dp"
+        android:singleLine="true" />
+
+    <!-- Password -->
+    <TextView
+        android:id="@+id/passwordLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextusername"
+        android:layout_marginTop="20dp"
+        android:text="Password"
+        android:textColor="#ffffff" />
+
+    <EditText
+        android:id="@+id/editTextpassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/passwordLabel"
+        android:layout_marginTop="8dp"
+        android:background="#ffffff"
+        android:hint="Enter Password"
+        android:inputType="textPassword"
+        android:padding="8dp"
+        android:singleLine="true" />
+
+    <!-- Login Button -->
     <Button
         android:id="@+id/buttonlogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/spinnerloginas"
-        android:layout_marginBottom="34dp"
-        android:text="Login" />
+        android:layout_below="@id/editTextpassword"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/roundedbutton"
+        android:text="Login"
+        android:textColor="#ffffff" />
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonlogin"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/roundedbutton"
+        android:text="Register as New Faculty"
+        android:textColor="#ffffff"
+        android:visibility="gone" />
 
 </RelativeLayout>

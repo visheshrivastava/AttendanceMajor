@@ -1,4 +1,6 @@
 com.example.androidattendancesystem
+array branches_array
+array years_array
 attr alpha
 attr coordinatorLayoutStyle
 attr font
@@ -76,6 +78,7 @@ id AbsentradioButton
 id Cancel_Button
 id DateEditText
 id DateImageButton
+id ImportButton
 id MessageforRegister
 id PresentradioButton
 id RegisterButton
@@ -113,6 +116,7 @@ id clip_horizontal
 id clip_vertical
 id dateLabel
 id editAttendanceButton
+id editTextEnrollment
 id editTextFirstName
 id editTextLastName
 id editTextPassword
@@ -135,9 +139,7 @@ id icon_group
 id importCsvButton
 id info
 id italic
-id label
 id labelA
-id labelAttendance
 id labelAttendancePerStudent
 id lastNameEditText
 id left
@@ -152,6 +154,7 @@ id notification_background
 id notification_main_column
 id notification_main_column_container
 id passwordEditText
+id passwordLabel
 id phoneEditText
 id radioGroup
 id registerButton
@@ -159,9 +162,14 @@ id registrationsListView
 id right
 id right_icon
 id right_side
+id roleLabel
+id sessionLabel
 id shortAttendanceListView
 id spinner1
+id spinnerBranch
 id spinnerSE
+id spinnerSession
+id spinnerYear
 id spinnerbranchView
 id spinnerdept
 id spinnerloginas
@@ -172,6 +180,8 @@ id startDateEditText
 id startDateLabel
 id status_bar_latest_event_content
 id studentCheckBox
+id studentNameTextView
+id subjectEditText
 id submitButton
 id tag_transition_group
 id tag_unhandled_key_event_manager
@@ -180,7 +190,6 @@ id text
 id text2
 id textView1
 id textView2
-id textView3
 id textViewEmail
 id textViewFirstName
 id textViewFormName
@@ -190,9 +199,12 @@ id textViewPhone
 id textViewUserName
 id time
 id title
+id titleText
+id titleTextView
 id top
 id updateAttendanceButton
 id usernameEditText
+id usernameLabel
 id viewAttendancebutton
 id viewFacultyRegistrationsButton
 id viewShortAttendanceButton
@@ -204,6 +216,7 @@ layout activity_edit_attendance
 layout activity_main
 layout activity_view_short_attendance
 layout add_attandance
+layout add_attendance
 layout add_student_attendance
 layout addfaculty
 layout addstudent
@@ -228,12 +241,14 @@ layout notification_template_part_chronometer
 layout notification_template_part_time
 layout spinner_dropdown_item
 layout spinner_item
+layout student_list_item
 layout test_layout
 layout test_main
 layout view_attendance_list
 layout view_attendance_list_per_student
 layout view_faculty_list
 layout view_faculty_registrations
+layout view_student_by_branch_year
 layout view_student_list
 layout viewstudent
 menu main

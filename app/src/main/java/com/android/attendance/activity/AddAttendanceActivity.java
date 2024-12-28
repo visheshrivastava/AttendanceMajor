@@ -31,80 +31,97 @@ import com.example.androidattendancesystem.R;
 
 public class AddAttendanceActivity extends Activity {
 
-	ArrayList<StudentBean> studentBeanList;
-	private ListView listView ;  
+	private ListView listView;
+	private ArrayList<StudentBean> studentBeanList;
 	private ArrayAdapter<String> listAdapter;
-	int sessionId=0;
-	String status="P";
-	Button attendanceSubmit;
-	DBAdapter dbAdapter = new DBAdapter(this);
 	private Button submitButton;
-	private ArrayList<Boolean> attendanceList;
+	private String currentSession;
+	private long sessionId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.__listview_main);
+		setContentView(R.layout.add_attendance);
 
-		sessionId = getIntent().getExtras().getInt("sessionId");
-		
-		listView = (ListView)findViewById(R.id.listview);
-		final ArrayList<String> studentList = new ArrayList<String>();
-		attendanceList = new ArrayList<Boolean>();
+		currentSession = getIntent().getStringExtra("session");
+		sessionId = getIntent().getLongExtra("sessionId", -1);
 
-		studentBeanList = ((ApplicationContext)AddAttendanceActivity.this.getApplicationContext()).getStudentBeanList();
-
-		for(StudentBean studentBean : studentBeanList) {
-			String users = studentBean.getStudent_firstname() + "," + studentBean.getStudent_lastname();
-			studentList.add(users);
-			attendanceList.add(false);  // Initially all students are marked present (unchecked)
-			Log.d("users: ", users); 
+		if (currentSession == null || sessionId == -1) {
+			Toast.makeText(this, "Invalid session information", Toast.LENGTH_SHORT).show();
+			finish();
+			return;
 		}
 
-		listAdapter = new ArrayAdapter<String>(this, R.layout.add_student_attendance, R.id.labelA, studentList) {
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				View view = super.getView(position, convertView, parent);
-				
-				CheckBox checkBox = (CheckBox) view.findViewById(R.id.studentCheckBox);
-				checkBox.setChecked(attendanceList.get(position));
-				
-				checkBox.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						attendanceList.set(position, checkBox.isChecked());
-					}
-				});
-				
-				return view;
-			}
-		};
+		listView = (ListView) findViewById(R.id.listview);
+		if (listView == null) {
+			Toast.makeText(this, "Error initializing view", Toast.LENGTH_SHORT).show();
+			finish();
+			return;
+		}
+		
+		submitButton = (Button) findViewById(R.id.buttonsubmit);
+
+		studentBeanList = ((ApplicationContext) getApplicationContext()).getStudentBeanList();
+		if (studentBeanList == null) {
+			Toast.makeText(this, "No students found", Toast.LENGTH_SHORT).show();
+			finish();
+			return;
+		}
+
+		final ArrayList<String> studentList = new ArrayList<String>();
+		for (StudentBean studentBean : studentBeanList) {
+			String users = studentBean.getStudent_firstname() + " " + 
+						  studentBean.getStudent_lastname() ;
+			studentList.add(users);
+		}
+
+		listAdapter = new ArrayAdapter<String>(this, 
+			android.R.layout.simple_list_item_multiple_choice, studentList);
+		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		listView.setAdapter(listAdapter);
 
-		submitButton = (Button)findViewById(R.id.buttonSubmitAttendance);
 		submitButton.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(View arg0) {
 				submitAttendance();
 			}
 		});
 	}
 
 	private void submitAttendance() {
-		for (int i = 0; i < studentBeanList.size(); i++) {
-			StudentBean studentBean = studentBeanList.get(i);
-			boolean isAbsent = attendanceList.get(i);
-			
+		final ArrayList<AttendanceBean> attendanceBeanList = new ArrayList<AttendanceBean>();
+
+		final int len = studentBeanList.size();
+		for (int i = 0; i < len; i++) {
 			AttendanceBean attendanceBean = new AttendanceBean();
 			attendanceBean.setAttendance_session_id(sessionId);
-			attendanceBean.setAttendance_student_id(studentBean.getStudent_id());
-			attendanceBean.setAttendance_status(isAbsent ? "A" : "P");  // Changed this line
-			
-			dbAdapter.addNewAttendance(attendanceBean);
+			String enrollment = studentBeanList.get(i).getStudent_enrollment();
+			try {
+				int studentId = Integer.parseInt(enrollment.replaceAll("[^0-9]", ""));
+				attendanceBean.setAttendance_student_id(studentId);
+				attendanceBean.setAttendance_status(listView.isItemChecked(i) ? "P" : "A");
+				attendanceBeanList.add(attendanceBean);
+			} catch (NumberFormatException e) {
+				Log.e("AddAttendance", "Error parsing enrollment: " + enrollment, e);
+				Toast.makeText(AddAttendanceActivity.this, 
+					"Error processing enrollment number: " + enrollment, 
+					Toast.LENGTH_SHORT).show();
+			}
 		}
-		
-		Toast.makeText(this, "Attendance submitted successfully", Toast.LENGTH_SHORT).show();
-		finish();  // Close the activity after submitting
+
+		if (!attendanceBeanList.isEmpty()) {
+			DBAdapter dbAdapter = new DBAdapter(AddAttendanceActivity.this);
+			for (AttendanceBean attendanceBean : attendanceBeanList) {
+				dbAdapter.addAttendanceWithSession(attendanceBean, currentSession);
+			}
+
+			Toast.makeText(getApplicationContext(), "Attendance submitted successfully", 
+				Toast.LENGTH_SHORT).show();
+			finish();
+		} else {
+			Toast.makeText(getApplicationContext(), "No attendance records to submit", 
+				Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override

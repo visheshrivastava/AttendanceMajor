@@ -8,16 +8,24 @@
         "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/test_main.xml"
     },
     {
+        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_view_student_by_branch_year.xml.flat",
+        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/view_student_by_branch_year.xml"
+    },
+    {
         "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_activity_edit_attendance.xml.flat",
         "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/activity_edit_attendance.xml"
     },
     {
-        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_spinner_dropdown_item.xml.flat",
-        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/spinner_dropdown_item.xml"
+        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_student_list_item.xml.flat",
+        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/student_list_item.xml"
     },
     {
         "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_test_layout.xml.flat",
         "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/test_layout.xml"
+    },
+    {
+        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_spinner_dropdown_item.xml.flat",
+        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/spinner_dropdown_item.xml"
     },
     {
         "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_view_attendance_list.xml.flat",
@@ -26,6 +34,10 @@
     {
         "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/drawable-hdpi_roundedbutton.xml.flat",
         "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/drawable-hdpi/roundedbutton.xml"
+    },
+    {
+        "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/layout_add_attendance.xml.flat",
+        "source": "/Users/visheshshrivastava/Downloads/Major Project/app/src/main/res/layout/add_attendance.xml"
     },
     {
         "merged": "/Users/visheshshrivastava/Downloads/Major Project/app/build/intermediates/merged_res/debug/menu_main.xml.flat",

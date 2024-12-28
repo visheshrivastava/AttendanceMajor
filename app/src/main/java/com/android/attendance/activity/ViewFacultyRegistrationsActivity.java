@@ -21,6 +21,7 @@ public class ViewFacultyRegistrationsActivity extends Activity {
     private ListView registrationsListView;
     private ArrayAdapter<String> listAdapter;
     private ArrayList<FacultyBean> pendingRegistrations;
+    private DBAdapter dbAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +29,20 @@ public class ViewFacultyRegistrationsActivity extends Activity {
         setContentView(R.layout.view_faculty_registrations);
 
         registrationsListView = findViewById(R.id.registrationsListView);
-        DBAdapter dbAdapter = new DBAdapter(this);
+        dbAdapter = new DBAdapter(this);
         
-        // Ensure the table exists
-        dbAdapter.ensureFacultyRegistrationTableExists();
-        
+        loadPendingRegistrations();
+
+        registrationsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FacultyBean selectedFaculty = pendingRegistrations.get(position);
+                showApprovalDialog(selectedFaculty);
+            }
+        });
+    }
+
+    private void loadPendingRegistrations() {
         pendingRegistrations = dbAdapter.getPendingFacultyRegistrations();
 
         if (pendingRegistrations.isEmpty()) {
@@ -41,34 +51,36 @@ public class ViewFacultyRegistrationsActivity extends Activity {
 
         ArrayList<String> registrationsList = new ArrayList<>();
         for (FacultyBean faculty : pendingRegistrations) {
-            registrationsList.add(faculty.getFaculty_firstname() + " " + faculty.getFaculty_lastname() + " - " + faculty.getFaculty_username());
+            String facultyInfo = faculty.getFaculty_firstname() + " " + faculty.getFaculty_lastname() + 
+                                 " - " + faculty.getFaculty_subject();
+            registrationsList.add(facultyInfo);
         }
 
         listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, registrationsList);
         registrationsListView.setAdapter(listAdapter);
-
-        registrationsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showApprovalDialog(pendingRegistrations.get(position));
-            }
-        });
     }
 
     private void showApprovalDialog(final FacultyBean faculty) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ViewFacultyRegistrationsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Approve Faculty Registration");
         builder.setMessage("Do you want to approve " + faculty.getFaculty_firstname() + " " + faculty.getFaculty_lastname() + "?");
         builder.setPositiveButton("Approve", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                DBAdapter dbAdapter = new DBAdapter(ViewFacultyRegistrationsActivity.this);
-                dbAdapter.approveFacultyRegistration(faculty.getFaculty_id());
-                Toast.makeText(ViewFacultyRegistrationsActivity.this, "Faculty approved", Toast.LENGTH_SHORT).show();
-                recreate();
+                approveFacultyRegistration(faculty);
             }
         });
         builder.setNegativeButton("Cancel", null);
         builder.show();
+    }
+
+    private void approveFacultyRegistration(FacultyBean faculty) {
+        boolean success = dbAdapter.approveFacultyRegistration(faculty.getFaculty_id());
+        if (success) {
+            Toast.makeText(this, "Faculty approved successfully", Toast.LENGTH_SHORT).show();
+            loadPendingRegistrations(); // Reload the list
+        } else {
+            Toast.makeText(this, "Failed to approve faculty", Toast.LENGTH_SHORT).show();
+        }
     }
 }

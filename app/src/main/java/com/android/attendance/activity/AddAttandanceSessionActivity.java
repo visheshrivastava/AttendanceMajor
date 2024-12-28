@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import com.android.attendance.bean.AttendanceBean;
 import com.android.attendance.bean.AttendanceSessionBean;
@@ -13,6 +14,7 @@ import com.android.attendance.bean.StudentBean;
 import com.android.attendance.context.ApplicationContext;
 import com.android.attendance.db.DBAdapter;
 import com.example.androidattendancesystem.R;
+import com.android.attendance.util.SubjectManager;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -21,6 +23,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,7 +58,7 @@ public class AddAttandanceSessionActivity extends Activity {
 	String subject = "SC";
 
 	private String[] branchString = new String[] { "IT"};
-	private String[] yearString = new String[] {"1Y","2Y","3Y"};
+	private String[] yearString = new String[] {"1Y","2Y","3Y","4Y"};
 
 	private String[] subjectFinal = new String[] {"M3","DS","M4","CN","M5","NS"};
 	AttendanceSessionBean attendanceSessionBean;
@@ -72,11 +75,20 @@ public class AddAttandanceSessionActivity extends Activity {
 
 	private Button viewShortAttendanceButton;
 
+	private String currentSession;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_attandance);
 
+		// Get the current session from intent
+		currentSession = getIntent().getStringExtra("session");
+		if (currentSession == null) {
+			Toast.makeText(this, "No session selected", Toast.LENGTH_SHORT).show();
+			finish();
+			return;
+		}
 
 		spinnerbranch=(Spinner)findViewById(R.id.spinner1);
 		spinneryear=(Spinner)findViewById(R.id.spinneryear);
@@ -85,61 +97,24 @@ public class AddAttandanceSessionActivity extends Activity {
 		ArrayAdapter<String> adapter_branch = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, branchString);
 		adapter_branch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinnerbranch.setAdapter(adapter_branch);
-		spinnerbranch.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View view,
-									   int arg2, long arg3) {
-				// TODO Auto-generated method stub
-				((TextView) arg0.getChildAt(0)).setTextColor(Color.WHITE);
-				branch =(String) spinnerbranch.getSelectedItem();
-			}
 
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
-			}
-		});
-
-		///......................spinner2
 		ArrayAdapter<String> adapter_year = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, yearString);
 		adapter_year.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinneryear.setAdapter(adapter_year);
-		spinneryear.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View view,
-									   int arg2, long arg3) {
-				// TODO Auto-generated method stub
-				((TextView) arg0.getChildAt(0)).setTextColor(Color.WHITE);
-				year =(String) spinneryear.getSelectedItem();
-				Toast.makeText(getApplicationContext(), "year:"+year, Toast.LENGTH_SHORT).show();
 
+		AdapterView.OnItemSelectedListener selectionListener = new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				updateSubjectSpinner();
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
+			public void onNothingSelected(AdapterView<?> parent) {
 			}
-		});
+		};
 
-		ArrayAdapter<String> adapter_subject = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, subjectFinal);
-		adapter_subject.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerSubject.setAdapter(adapter_subject);
-		spinnerSubject.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View view,
-									   int arg2, long arg3) {
-				// TODO Auto-generated method stub
-				((TextView) arg0.getChildAt(0)).setTextColor(Color.WHITE);
-				subject =(String) spinnerSubject.getSelectedItem();
-
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
-			}
-		});
-
+		spinnerbranch.setOnItemSelectedListener(selectionListener);
+		spinneryear.setOnItemSelectedListener(selectionListener);
 
 		date = (ImageButton) findViewById(R.id.DateImageButton);
 		cal = Calendar.getInstance();
@@ -172,41 +147,59 @@ public class AddAttandanceSessionActivity extends Activity {
 				attendanceSessionBean.setAttendance_session_subject(subject);
 
 				DBAdapter dbAdapter = new DBAdapter(AddAttandanceSessionActivity.this);
-				int sessionId=	dbAdapter.addAttendanceSession(attendanceSessionBean);
+				long sessionId = dbAdapter.addAttendanceSession(attendanceSessionBean, currentSession);
 
-				ArrayList<StudentBean> studentBeanList=dbAdapter.getAllStudentByBranchYear(branch, year);
-				((ApplicationContext)AddAttandanceSessionActivity.this.getApplicationContext()).setStudentBeanList(studentBeanList);
+				if (sessionId != -1) {
+					ArrayList<StudentBean> studentBeanList = dbAdapter.getAllStudentByBranchYear(branch, year);
+					((ApplicationContext)AddAttandanceSessionActivity.this.getApplicationContext()).setStudentBeanList(studentBeanList);
 
-
-				Intent intent = new Intent(AddAttandanceSessionActivity.this,AddAttendanceActivity.class);
-				intent.putExtra("sessionId", sessionId);
-				startActivity(intent);
+					Intent intent = new Intent(AddAttandanceSessionActivity.this, AddAttendanceActivity.class);
+					intent.putExtra("sessionId", sessionId);
+					intent.putExtra("session", currentSession);
+					startActivity(intent);
+				} else {
+					Toast.makeText(AddAttandanceSessionActivity.this, 
+						"Failed to create attendance session", Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 
 		viewAttendance=(Button)findViewById(R.id.viewAttendancebutton);
 		viewAttendance.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View arg0) {
-
-				AttendanceSessionBean attendanceSessionBean = new AttendanceSessionBean();
-				FacultyBean bean=((ApplicationContext)AddAttandanceSessionActivity.this.getApplicationContext()).getFacultyBean();
-
-				attendanceSessionBean.setAttendance_session_faculty_id(bean.getFaculty_id());
-				attendanceSessionBean.setAttendance_session_department(branch);
-				attendanceSessionBean.setAttendance_session_class(year);
-				attendanceSessionBean.setAttendance_session_date(dateEditText.getText().toString());
-				attendanceSessionBean.setAttendance_session_subject(subject);
+				if (branch == null || year == null || subject == null) {
+					Toast.makeText(AddAttandanceSessionActivity.this, 
+						"Please select all fields", Toast.LENGTH_SHORT).show();
+					return;
+				}
 
 				DBAdapter dbAdapter = new DBAdapter(AddAttandanceSessionActivity.this);
+				
+				// Get existing sessions for this faculty, branch, year, and subject
+				ArrayList<AttendanceSessionBean> sessions = dbAdapter.getAttendanceSessionsByFacultyAndSubject(
+					((ApplicationContext)getApplicationContext()).getFacultyBean().getFaculty_id(),
+					branch, year, subject, currentSession);
 
-				ArrayList<AttendanceBean> attendanceBeanList = dbAdapter.getAttendanceBySessionID(attendanceSessionBean);
-				((ApplicationContext)AddAttandanceSessionActivity.this.getApplicationContext()).setAttendanceBeanList(attendanceBeanList);
+				if (sessions.isEmpty()) {
+					Toast.makeText(AddAttandanceSessionActivity.this, 
+						"No attendance records found", Toast.LENGTH_SHORT).show();
+					return;
+				}
 
-				Intent intent = new Intent(AddAttandanceSessionActivity.this,ViewAttendanceByFacultyActivity.class);
+				// Get attendance for all sessions
+				ArrayList<AttendanceBean> allAttendance = new ArrayList<>();
+				for (AttendanceSessionBean session : sessions) {
+					ArrayList<AttendanceBean> sessionAttendance = 
+						dbAdapter.getAttendanceBySessionIDAndSession(session.getAttendance_session_id(), currentSession);
+					allAttendance.addAll(sessionAttendance);
+				}
+
+				((ApplicationContext)getApplicationContext()).setAttendanceBeanList(allAttendance);
+				
+				Intent intent = new Intent(AddAttandanceSessionActivity.this, ViewAttendanceByFacultyActivity.class);
+				intent.putExtra("session", currentSession);
 				startActivity(intent);
-
 			}
 		});
 
@@ -221,16 +214,20 @@ public class AddAttandanceSessionActivity extends Activity {
 				attendanceSessionBean.setAttendance_session_faculty_id(bean.getFaculty_id());
 				attendanceSessionBean.setAttendance_session_department(branch);
 				attendanceSessionBean.setAttendance_session_class(year);
+				attendanceSessionBean.setAttendance_session_date(dateEditText.getText().toString());
 				attendanceSessionBean.setAttendance_session_subject(subject);
 
 				DBAdapter dbAdapter = new DBAdapter(AddAttandanceSessionActivity.this);
+				long sessionId = dbAdapter.addAttendanceSession(attendanceSessionBean, currentSession);
 
-				ArrayList<AttendanceBean> attendanceBeanList = dbAdapter.getTotalAttendanceBySessionID(attendanceSessionBean);
-				((ApplicationContext)AddAttandanceSessionActivity.this.getApplicationContext()).setAttendanceBeanList(attendanceBeanList);
-
-				Intent intent = new Intent(AddAttandanceSessionActivity.this,ViewAttendanceByFacultyActivity.class);
-				startActivity(intent);
-
+				if (sessionId != -1) {
+					ArrayList<AttendanceBean> attendanceBeanList = dbAdapter.getAttendanceBySessionIDAndSession(sessionId, currentSession);
+					((ApplicationContext)AddAttandanceSessionActivity.this.getApplicationContext()).setAttendanceBeanList(attendanceBeanList);
+					
+					Intent intent = new Intent(AddAttandanceSessionActivity.this, ViewAttendanceByFacultyActivity.class);
+					intent.putExtra("session", currentSession);
+					startActivity(intent);
+				}
 			}
 		});
 
@@ -411,6 +408,37 @@ public class AddAttandanceSessionActivity extends Activity {
 		Intent intent = new Intent(AddAttandanceSessionActivity.this, EditAttendanceActivity.class);
 		intent.putExtra("sessionBean", sessionBean);
 		startActivity(intent);
+	}
+
+	private void updateSubjectSpinner() {
+		String selectedBranch = spinnerbranch.getSelectedItem().toString();
+		String selectedYear = spinneryear.getSelectedItem().toString();
+		
+		// Get subjects for selected department and year
+		List<String> subjects = SubjectManager.getSubjectsForDepartmentAndYear(
+			selectedBranch, selectedYear);
+
+		// Update subject spinner
+		ArrayAdapter<String> subjectAdapter = new ArrayAdapter<>(this,
+			android.R.layout.simple_spinner_item, subjects);
+		subjectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerSubject.setAdapter(subjectAdapter);
+
+		// Update the selected subject
+		if (!subjects.isEmpty()) {
+			subject = subjects.get(0);
+		}
+
+		spinnerSubject.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View view, int position, long id) {
+				subject = spinnerSubject.getSelectedItem().toString();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
 	}
 
 }

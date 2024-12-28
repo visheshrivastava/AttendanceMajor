@@ -2,18 +2,18 @@ package com.android.attendance.bean;
 
 public class StudentBean {
 	
-	private int student_id;
+	private String student_enrollment;
 	private String student_firstname;
 	private String student_lastname;
 	private String student_mobilenumber;
 	private String student_address;
 	private String student_department;
 	private String student_class;
-	public int getStudent_id() {
-		return student_id;
+	public String getStudent_enrollment() {
+		return student_enrollment;
 	}
-	public void setStudent_id(int student_id) {
-		this.student_id = student_id;
+	public void setStudent_enrollment(String student_enrollment) {
+		this.student_enrollment = student_enrollment;
 	}
 	public String getStudent_firstname() {
 		return student_firstname;
@@ -51,7 +51,4 @@ public class StudentBean {
 	public void setStudent_class(String student_class) {
 		this.student_class = student_class;
 	}
-
-	
-
 }

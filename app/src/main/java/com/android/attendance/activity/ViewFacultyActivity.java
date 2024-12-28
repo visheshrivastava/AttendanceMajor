@@ -32,8 +32,7 @@ public class ViewFacultyActivity extends Activity {
 		listView = findViewById(R.id.listView);
 		dbAdapter = new DBAdapter(this);
 		
-		loadFacultyList();
-
+		// Add long click listener for delete functionality
 		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -42,37 +41,44 @@ public class ViewFacultyActivity extends Activity {
 				return true;
 			}
 		});
+
+		loadFacultyList();
 	}
 
 	private void loadFacultyList() {
 		facultyList = dbAdapter.getAllFaculty();
-
-		Log.d("ViewFacultyActivity", "Faculty list size: " + facultyList.size());
-
 		ArrayList<String> facultyStringList = new ArrayList<>();
+
 		for (FacultyBean faculty : facultyList) {
-			String facultyName = faculty.getFaculty_firstname() + " " + faculty.getFaculty_lastname();
-			facultyStringList.add(facultyName);
-			Log.d("ViewFacultyActivity", "Added faculty: " + facultyName);
+			String facultyInfo = String.format("%s %s\nSubject: %s", 
+				faculty.getFaculty_firstname(),
+				faculty.getFaculty_lastname(),
+				faculty.getFaculty_subject());
+			facultyStringList.add(facultyInfo);
 		}
 
-		listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, facultyStringList);
+		listAdapter = new ArrayAdapter<>(this, 
+			android.R.layout.simple_list_item_1, 
+			facultyStringList);
 		listView.setAdapter(listAdapter);
 	}
 
 	private void showDeleteConfirmationDialog(final FacultyBean faculty) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Delete Faculty");
-		builder.setMessage("Are you sure you want to delete " + faculty.getFaculty_firstname() + " " + faculty.getFaculty_lastname() + "?");
-		builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				deleteFaculty(faculty);
-				dialog.dismiss();
-			}
-		});
-		builder.setNegativeButton("Cancel", null);
-		builder.show();
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Delete Faculty");
+			builder.setMessage("Are you sure you want to delete " + 
+				faculty.getFaculty_firstname() + " " + 
+				faculty.getFaculty_lastname() + "?");
+			
+			builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					deleteFaculty(faculty);
+				}
+			});
+			
+			builder.setNegativeButton("Cancel", null);
+			builder.show();
 	}
 
 	private void deleteFaculty(FacultyBean faculty) {

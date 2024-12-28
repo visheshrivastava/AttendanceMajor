@@ -2,16 +2,16 @@ package com.android.attendance.bean;
 
 public class AttendanceBean {
 
-	private int attendance_session_id;
+	private long attendance_session_id;
 	private int attendance_student_id;
 	private String attendance_status;
 	private String student_firstname;
 	private String student_lastname;
 	
-	public int getAttendance_session_id() {
+	public long getAttendance_session_id() {
 		return attendance_session_id;
 	}
-	public void setAttendance_session_id(int attendance_session_id) {
+	public void setAttendance_session_id(long attendance_session_id) {
 		this.attendance_session_id = attendance_session_id;
 	}
 	public int getAttendance_student_id() {

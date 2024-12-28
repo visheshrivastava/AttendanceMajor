@@ -1,111 +1,169 @@
 package com.android.attendance.activity;
 
-import com.example.androidattendancesystem.R;
-
-import android.os.Bundle;
 import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Color;
-import android.view.Menu;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Toast;
+
+import com.android.attendance.bean.StudentBean;
+import com.android.attendance.db.DBAdapter;
+import com.example.androidattendancesystem.R;
+
+import java.util.ArrayList;
+import android.util.Log;
 
 public class ViewStudentActivity extends Activity {
 
-	Spinner spinnerbranch,spinneryear;
-	String userrole,branch,year;
-	private String[] branchString = new String[] { "IT"};
-	private String[] yearString = new String[] {"1Y","2Y","3Y"};
-	
-	Button submit;
-	
-	
+	private ListView listView;
+	private ArrayAdapter<String> listAdapter;
+	private ArrayList<StudentBean> studentBeanList;
+	private DBAdapter dbAdapter;
+	private Spinner spinnerBranch, spinnerYear;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.viewstudent);
-		
-		spinnerbranch=(Spinner)findViewById(R.id.spinnerbranchView);
-		spinneryear=(Spinner)findViewById(R.id.spinneryearView);
-		
-		
-		spinnerbranch.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View view,
-					int arg2, long arg3) {
-				// TODO Auto-generated method stub
-				((TextView) arg0.getChildAt(0)).setTextColor(Color.WHITE);
-				branch =(String) spinnerbranch.getSelectedItem();
+		setContentView(R.layout.view_student_list);
 
+		listView = (ListView) findViewById(R.id.listview);
+		spinnerBranch = (Spinner) findViewById(R.id.spinnerBranch);
+		spinnerYear = (Spinner) findViewById(R.id.spinnerYear);
+		dbAdapter = new DBAdapter(this);
+		
+		// Set up branch spinner
+		ArrayAdapter<CharSequence> branchAdapter = ArrayAdapter.createFromResource(this,
+				R.array.branches_array, android.R.layout.simple_spinner_item);
+		branchAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerBranch.setAdapter(branchAdapter);
+
+		// Set up year spinner
+		ArrayAdapter<CharSequence> yearAdapter = ArrayAdapter.createFromResource(this,
+				R.array.years_array, android.R.layout.simple_spinner_item);
+		yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerYear.setAdapter(yearAdapter);
+
+		spinnerBranch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				loadStudentList();
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
+			public void onNothingSelected(AdapterView<?> parent) {
 			}
 		});
 
-		ArrayAdapter<String> adapter_branch = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, branchString);
-		adapter_branch
-		.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerbranch.setAdapter(adapter_branch);
-
-		///......................spinner2
-
-		spinneryear.setOnItemSelectedListener(new OnItemSelectedListener() {
+		spinnerYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View view,
-					int arg2, long arg3) {
-				// TODO Auto-generated method stub
-				((TextView) arg0.getChildAt(0)).setTextColor(Color.WHITE);
-				year =(String) spinneryear.getSelectedItem();
-
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				loadStudentList();
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
+			public void onNothingSelected(AdapterView<?> parent) {
 			}
 		});
 
-		ArrayAdapter<String> adapter_year = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, yearString);
-		adapter_year
-		.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinneryear.setAdapter(adapter_year);
-		
-		submit=(Button)findViewById(R.id.submitButton);
-		submit.setOnClickListener(new OnClickListener() {
-			
+		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
-			public void onClick(View arg0) {
-			
-				Intent intent = new Intent(ViewStudentActivity.this,ViewStudentByBranchYear.class);
-				intent.putExtra("branch", branch);
-				intent.putExtra("year", year);
-				startActivity(intent);
-				
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				StudentBean selectedStudent = studentBeanList.get(position);
+				showDeleteConfirmationDialog(selectedStudent);
+				return true;
 			}
 		});
 
-	}
-	
-	
-	
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+		loadStudentList();
 	}
 
+	private void loadStudentList() {
+		String selectedBranch = spinnerBranch.getSelectedItem().toString();
+		String selectedYear = spinnerYear.getSelectedItem().toString();
+
+		Log.d("ViewStudentActivity", "Loading students for Branch: " + selectedBranch + ", Year: " + selectedYear);
+
+		studentBeanList = dbAdapter.getAllStudentByBranchYear(selectedBranch, selectedYear);
+
+		ArrayList<String> studentList = new ArrayList<>();
+		for (StudentBean studentBean : studentBeanList) {
+			String enrollment = studentBean.getStudent_enrollment();
+			Log.d("ViewStudentActivity", "Student: " + studentBean.getStudent_firstname() + 
+									 ", Enrollment: " + (enrollment != null ? enrollment : "null") +
+									 ", Department: " + studentBean.getStudent_department() +
+									 ", Class: " + studentBean.getStudent_class());
+			
+			String studentInfo = String.format("%s %s (%s)\n%s, %s",
+				studentBean.getStudent_firstname(),
+				studentBean.getStudent_lastname(),
+				enrollment != null ? enrollment : "No Enrollment",
+				studentBean.getStudent_department(),
+				studentBean.getStudent_class()
+			);
+			studentList.add(studentInfo);
+		}
+
+		listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, studentList);
+		listView.setAdapter(listAdapter);
+
+		if (studentList.isEmpty()) {
+			Toast.makeText(this, "No students found for selected branch and year", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	private void showDeleteConfirmationDialog(final StudentBean student) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Delete Student");
+		builder.setMessage("Are you sure you want to delete " + student.getStudent_firstname() + " " + student.getStudent_lastname() + "?");
+		builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				deleteStudent(student);
+			}
+		});
+		builder.setNegativeButton("Cancel", null);
+		builder.show();
+	}
+
+	private void deleteStudent(StudentBean student) {
+		try {
+			dbAdapter.deleteStudent(student.getStudent_enrollment());
+			Toast.makeText(this, "Student deleted successfully", Toast.LENGTH_SHORT).show();
+			loadStudentList();
+		} catch (Exception e) {
+			Toast.makeText(this, "Failed to delete student", Toast.LENGTH_SHORT).show();
+			Log.e("ViewStudentActivity", "Error deleting student", e);
+		}
+	}
+
+	private void searchStudents(String branch, String year, String enrollmentPattern) {
+		studentBeanList = dbAdapter.getStudentsByBranchYearEnrollment(branch, year, enrollmentPattern);
+		updateStudentList();
+	}
+
+	private void updateStudentList() {
+		ArrayList<String> studentList = new ArrayList<>();
+		for (StudentBean studentBean : studentBeanList) {
+			String studentInfo = String.format("%s %s (%s)\n%s, %s",
+				studentBean.getStudent_firstname(),
+					studentBean.getStudent_lastname(),
+					studentBean.getStudent_enrollment(),
+					studentBean.getStudent_department(),
+					studentBean.getStudent_class()
+			);
+			studentList.add(studentInfo);
+		}
+
+		listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, studentList);
+		listView.setAdapter(listAdapter);
+
+		if (studentList.isEmpty()) {
+			Toast.makeText(this, "No students found", Toast.LENGTH_SHORT).show();
+		}
+	}
 }

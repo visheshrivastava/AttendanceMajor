@@ -4,17 +4,17 @@ import java.io.Serializable;
 
 public class AttendanceSessionBean implements Serializable {
 	
-	private int attendance_session_id;
+	private long attendance_session_id;
 	private int attendance_session_faculty_id;
 	private String attendance_session_department;
 	private String attendance_session_class;
 	private String attendance_session_date;
 	private String attendance_session_subject;
 	
-	public int getAttendance_session_id() {
+	public long getAttendance_session_id() {
 		return attendance_session_id;
 	}
-	public void setAttendance_session_id(int attendance_session_id) {
+	public void setAttendance_session_id(long attendance_session_id) {
 		this.attendance_session_id = attendance_session_id;
 	}
 	public int getAttendance_session_faculty_id() {

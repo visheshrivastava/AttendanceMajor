@@ -27,144 +27,112 @@ import com.example.androidattendancesystem.R;
 
 public class LoginActivity extends Activity {
 
-	Button login;
-	EditText username,password;
-	Spinner spinnerloginas;
-	String userrole;
-	private String[] userRoleString = new String[] { "admin", "faculty"};
+	private Spinner spinnerloginas, spinnerSession;
+	private String userrole;
+	private String selectedSession;
+	private EditText username;
+	private EditText password;
+	private Button login, registerButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
 
-		login =(Button)findViewById(R.id.buttonlogin);
-		username=(EditText)findViewById(R.id.editTextusername);
-		password=(EditText)findViewById(R.id.editTextpassword);
-		spinnerloginas=(Spinner)findViewById(R.id.spinnerloginas);
+		 spinnerloginas = (Spinner) findViewById(R.id.spinnerloginas);
+		 spinnerSession = (Spinner) findViewById(R.id.spinnerSession);
+		 username = (EditText) findViewById(R.id.editTextusername);
+		 password = (EditText) findViewById(R.id.editTextpassword);
+		 login = (Button) findViewById(R.id.buttonlogin);
+		 registerButton = (Button) findViewById(R.id.registerButton);
+
+		// Set up role spinner
+		String[] userRoles = new String[]{"admin", "faculty"};
+		ArrayAdapter<String> roleAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, userRoles);
+		roleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerloginas.setAdapter(roleAdapter);
+
+		// Set up session spinner
+		String[] sessions = new String[]{
+			"2023-24 Odd Semester",
+			"2023-24 Even Semester",
+			"2024-25 Odd Semester",
+			"2024-25 Even Semester"
+		};
+		ArrayAdapter<String> sessionAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, sessions);
+		sessionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerSession.setAdapter(sessionAdapter);
 
 		spinnerloginas.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View view,
-					int arg2, long arg3) {
-				// Check if view is not null before setting text color
-				if (view != null && view instanceof TextView) {
-					((TextView) view).setTextColor(Color.WHITE);
-				}
+			public void onItemSelected(AdapterView<?> arg0, View view, int arg2, long arg3) {
 				userrole = spinnerloginas.getSelectedItem().toString();
-
+				if (userrole.equals("faculty")) {
+					registerButton.setVisibility(View.VISIBLE);
+				} else {
+					registerButton.setVisibility(View.GONE);
+				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
 			}
 		});
 
-		ArrayAdapter<String> adapter_role = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, userRoleString) {
+		spinnerSession.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				View view = super.getView(position, convertView, parent);
-				TextView text = (TextView) view.findViewById(android.R.id.text1);
-				text.setTextColor(Color.BLACK); // Change this color as needed
-				return view;
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				selectedSession = spinnerSession.getSelectedItem().toString();
 			}
 
 			@Override
-			public View getDropDownView(int position, View convertView, ViewGroup parent) {
-				View view = super.getDropDownView(position, convertView, parent);
-				TextView text = (TextView) view.findViewById(android.R.id.text1);
-				text.setTextColor(Color.BLACK);
-				return view;
+			public void onNothingSelected(AdapterView<?> parent) {
 			}
-		};
-		adapter_role.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerloginas.setAdapter(adapter_role);
+		});
 
-		login.setOnClickListener(new OnClickListener() {
-
+		registerButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				Intent intent = new Intent(LoginActivity.this, FacultyRegistrationActivity.class);
+				intent.putExtra("session", selectedSession);
+				startActivity(intent);
+			}
+		});
 
-				if(userrole.equals("admin"))
-				{
+		login.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String user_name = username.getText().toString();
+				String pass_word = password.getText().toString();
 
-					String user_name = username.getText().toString();
-					String pass_word = password.getText().toString();
-
-					if (TextUtils.isEmpty(user_name)) 
-					{
-						username.setError("Invalid User Name");
-					}
-					else if(TextUtils.isEmpty(pass_word))
-					{
-						password.setError("enter password");
-					}
-					else
-					{
+				if (userrole.equals("admin")) {
+					if (user_name.equals("admin") && pass_word.equals("admin123")) {
 						Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
-						intent.putExtra("role", userrole);
+						intent.putExtra("role", "admin");
+						intent.putExtra("session", selectedSession);
 						startActivity(intent);
 						Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
+					} else {
+						Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT).show();
 					}
-				}
-				
-				else
-				{
-					String user_name = username.getText().toString();
-					String pass_word = password.getText().toString();
-
-					if (TextUtils.isEmpty(user_name)) 
-					{
-						username.setError("Invalid User Name");
-					}
-					else if(TextUtils.isEmpty(pass_word))
-					{
-						password.setError("enter password");
-					}
+				} else if (userrole.equals("faculty")) {
 					DBAdapter dbAdapter = new DBAdapter(LoginActivity.this);
 					FacultyBean facultyBean = dbAdapter.validateFaculty(user_name, pass_word);
-					
-					if(facultyBean!=null)
-					{
-						Intent intent = new Intent(LoginActivity.this,AddAttandanceSessionActivity.class);
+					if (facultyBean != null) {
+						Intent intent = new Intent(LoginActivity.this, AddAttandanceSessionActivity.class);
+						intent.putExtra("role", "faculty");
+						intent.putExtra("session", selectedSession);
+						((ApplicationContext)getApplicationContext()).setFacultyBean(facultyBean);
 						startActivity(intent);
-						((ApplicationContext)LoginActivity.this.getApplicationContext()).setFacultyBean(facultyBean);
 						Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
-					}
-					else
-					{
+					} else {
 						Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT).show();
 					}
 				}
-
-				if (userrole.equals("faculty")) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-					builder.setTitle("Faculty Login");
-					builder.setMessage("Are you an existing user?");
-					builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// Proceed with existing login flow
-						}
-					});
-					builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// Redirect to faculty registration
-							Intent intent = new Intent(LoginActivity.this, FacultyRegistrationActivity.class);
-							startActivity(intent);
-						}
-					});
-					builder.show();
-				}
-
 			}
 		});
-
-
-
 	}
 
 	@Override

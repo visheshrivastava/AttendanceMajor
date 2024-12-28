@@ -21,7 +21,7 @@ public class ViewAttandanceActivity extends Activity {
 	Spinner spinnerbranch,spinneryear;
 	String userrole,branch,year;
 	private String[] branchString = new String[] { "IT"};
-	private String[] yearString = new String[] {"1Y","2Y","3Y"};
+	private String[] yearString = new String[] {"1Y","2Y","3Y","4Y"};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

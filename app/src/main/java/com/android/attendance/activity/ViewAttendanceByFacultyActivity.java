@@ -24,121 +24,84 @@ import com.example.androidattendancesystem.R;
 
 public class ViewAttendanceByFacultyActivity extends Activity {
 
-	ArrayList<AttendanceBean> attendanceBeanList;
-	private ListView listView ;  
+	private ListView listView;
 	private ArrayAdapter<String> listAdapter;
+	private String currentSession;
 
-	DBAdapter dbAdapter = new DBAdapter(this);
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.__listview_main);
+		setContentView(R.layout.view_attendance_list);
 
-		boolean isShortAttendance = getIntent().getBooleanExtra("short_attendance", false);
-
-		listView=(ListView)findViewById(R.id.listview);
-		final ArrayList<String> attendanceList = new ArrayList<String>();
-		
-		if (isShortAttendance) {
-			attendanceList.add("Id | StudentName | Attendance%");
-		} else {
-			attendanceList.add("Id | StudentName | Status");
+		// Get current session
+		currentSession = getIntent().getStringExtra("session");
+		if (currentSession == null) {
+			Toast.makeText(this, "No session selected", Toast.LENGTH_SHORT).show();
+			finish();
+			return;
 		}
 
-		attendanceBeanList=((ApplicationContext)ViewAttendanceByFacultyActivity.this.getApplicationContext()).getAttendanceBeanList();
+		listView = (ListView) findViewById(R.id.listview);
+		ArrayList<AttendanceBean> attendanceBeanList = ((ApplicationContext) getApplicationContext()).getAttendanceBeanList();
 
-		for(AttendanceBean attendanceBean : attendanceBeanList)
-		{
-			String users = "";
-			if(attendanceBean.getAttendance_session_id() != 0)
-			{
-				DBAdapter dbAdapter = new DBAdapter(ViewAttendanceByFacultyActivity.this);
+		ArrayList<String> attendanceList = new ArrayList<String>();
+		attendanceList.add("StudentName | Status");
+
+		if (attendanceBeanList != null && !attendanceBeanList.isEmpty()) {
+			for (AttendanceBean attendanceBean : attendanceBeanList) {
+				DBAdapter dbAdapter = new DBAdapter(this);
 				StudentBean studentBean = dbAdapter.getStudentById(attendanceBean.getAttendance_student_id());
-				if (isShortAttendance) {
-					users = attendanceBean.getAttendance_student_id() + ".     " +
-							studentBean.getStudent_firstname() + "," +
-							studentBean.getStudent_lastname() + "                  " +
-							attendanceBean.getAttendance_session_id() + "%";
-				} else {
-					users = attendanceBean.getAttendance_student_id() + ".     " +
-							studentBean.getStudent_firstname() + "," +
-							studentBean.getStudent_lastname() + "                  " +
-							attendanceBean.getAttendance_status();
-				}
+				
+				String status = attendanceBean.getAttendance_status().equals("P") ? "Present" : "Absent";
+				String attendanceInfo = studentBean.getStudent_firstname() + " " + 
+									 studentBean.getStudent_lastname() + " (" +
+									 studentBean.getStudent_enrollment() + ") | " + status;
+				attendanceList.add(attendanceInfo);
 			}
-			else
-			{
-				users = attendanceBean.getAttendance_status();
-			}
-			
-			attendanceList.add(users);
-			Log.d("users: ", users); 
+		} else {
+			attendanceList.add("No attendance records found");
 		}
 
-		listAdapter = new ArrayAdapter<String>(this, R.layout.view_attendance_list, R.id.labelAttendance, attendanceList);
-		listView.setAdapter( listAdapter ); 
+		listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, attendanceList);
+		listView.setAdapter(listAdapter);
 
-		/*listView.setOnItemLongClickListener(new OnItemLongClickListener() {
-
+		// Add long press to edit attendance
+		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-					final int position, long arg3) {
-
-
-
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ViewAttendanceByFacultyActivity.this);
-
-				alertDialogBuilder.setTitle(getTitle()+"decision");
-				alertDialogBuilder.setMessage("Are you sure?");
-
-				alertDialogBuilder.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,int id) {
-
-						facultyList.remove(position);
-						listAdapter.notifyDataSetChanged();
-						listAdapter.notifyDataSetInvalidated();   
-
-						dbAdapter.deleteFaculty(facultyBeanList.get(position).getFaculty_id());
-						facultyBeanList=dbAdapter.getAllFaculty();
-
-						for(FacultyBean facultyBean : facultyBeanList)
-						{
-							String users = " FirstName: " + facultyBean.getFaculty_firstname()+"\nLastname:"+facultyBean.getFaculty_lastname();
-							facultyList.add(users);
-							Log.d("users: ", users); 
-
-						}
-						
-					}
-					
-				});
-				alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,int id) {
-						// cancel the alert box and put a Toast to the user
-						dialog.cancel();
-						Toast.makeText(getApplicationContext(), "You choose cancel", 
-								Toast.LENGTH_LONG).show();
-					}
-				});
-
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				// show alert
-				alertDialog.show();
-
-
-
-
-
-				return false;
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				if (position > 0 && position < attendanceBeanList.size() + 1) {
+					AttendanceBean selectedAttendance = attendanceBeanList.get(position - 1);
+					showEditDialog(selectedAttendance);
+				}
+				return true;
 			}
 		});
-*/
-
-
-
 	}
 
+	private void showEditDialog(final AttendanceBean attendance) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Edit Attendance");
+		
+		final String[] options = {"Present", "Absent"};
+		int currentChoice = attendance.getAttendance_status().equals("P") ? 0 : 1;
 
+		builder.setSingleChoiceItems(options, currentChoice, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				String newStatus = (which == 0) ? "P" : "A";
+				attendance.setAttendance_status(newStatus);
+				
+				DBAdapter dbAdapter = new DBAdapter(ViewAttendanceByFacultyActivity.this);
+				dbAdapter.updateAttendanceWithSession(attendance, currentSession);
+
+				dialog.dismiss();
+				recreate(); // Refresh the activity to show updated data
+			}
+		});
+
+		builder.setNegativeButton("Cancel", null);
+		builder.show();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
