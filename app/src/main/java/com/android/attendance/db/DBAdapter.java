@@ -837,4 +837,134 @@ public class DBAdapter extends SQLiteOpenHelper {
 		return list;
 	}
 
+	public ArrayList<AttendanceBean> getAllAttendanceByBranchYear(String branch, String year) {
+		ArrayList<AttendanceBean> list = new ArrayList<>();
+		SQLiteDatabase db = this.getReadableDatabase();
+		
+		String query = "SELECT a.*, ast.attendance_session_date, ast.attendance_session_subject, " +
+					  "f.faculty_firstname, f.faculty_lastname " +
+					  "FROM " + ATTENDANCE_TABLE + " a " +
+					  "JOIN " + ATTENDANCE_SESSION_TABLE + " ast ON a.attendance_session_id = ast.attendance_session_id " +
+					  "JOIN " + FACULTY_INFO_TABLE + " f ON ast.attendance_session_faculty_id = f.faculty_id " +
+					  "WHERE ast.attendance_session_department = ? " +
+					  "AND ast.attendance_session_class = ? " +
+					  "ORDER BY ast.attendance_session_date DESC, ast.attendance_session_subject ASC";
+		
+		Log.d("DBAdapter", "Query: " + query);
+		Log.d("DBAdapter", "Branch: " + branch + ", Year: " + year);
+		
+		Cursor cursor = db.rawQuery(query, new String[]{branch, year});
+		Log.d("DBAdapter", "Found " + cursor.getCount() + " records");
+
+		if (cursor.moveToFirst()) {
+			do {
+				AttendanceBean attendanceBean = new AttendanceBean();
+				
+				// Get column indices first
+				int sessionIdCol = cursor.getColumnIndex(KEY_SESSION_ID);
+				int studentIdCol = cursor.getColumnIndex(KEY_ATTENDANCE_STUDENT_ID);
+				int statusCol = cursor.getColumnIndex(KEY_ATTENDANCE_STATUS);
+				int dateCol = cursor.getColumnIndex(KEY_ATTENDANCE_SESSION_DATE);
+				int subjectCol = cursor.getColumnIndex(KEY_ATTENDANCE_SESSION_SUBJECT);
+				int firstNameCol = cursor.getColumnIndex(KEY_FACULTY_FIRSTNAME);
+				int lastNameCol = cursor.getColumnIndex(KEY_FACULTY_LASTNAME);
+
+				// Log column indices for debugging
+				Log.d("DBAdapter", "Column indices - SessionID: " + sessionIdCol + 
+								 ", StudentID: " + studentIdCol +
+								 ", Status: " + statusCol +
+								 ", Date: " + dateCol +
+								 ", Subject: " + subjectCol +
+								 ", FirstName: " + firstNameCol +
+								 ", LastName: " + lastNameCol);
+
+				// Only set values if column exists
+				if (sessionIdCol != -1) 
+					attendanceBean.setAttendance_session_id(cursor.getLong(sessionIdCol));
+				if (studentIdCol != -1) 
+					attendanceBean.setAttendance_student_id(cursor.getString(studentIdCol));
+				if (statusCol != -1) 
+					attendanceBean.setAttendance_status(cursor.getString(statusCol));
+				if (dateCol != -1) 
+					attendanceBean.setAttendance_session_date(cursor.getString(dateCol));
+				if (subjectCol != -1) 
+					attendanceBean.setSubject(cursor.getString(subjectCol));
+				
+				// Combine faculty name
+				String facultyName = "";
+				if (firstNameCol != -1) 
+					facultyName += cursor.getString(firstNameCol);
+				if (lastNameCol != -1) 
+					facultyName += " " + cursor.getString(lastNameCol);
+				attendanceBean.setFaculty_name(facultyName.trim());
+
+				list.add(attendanceBean);
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		return list;
+	}
+
+	public int[] getAttendanceCountForSession(String studentId, long sessionId) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		int[] counts = new int[2]; // [present_count, total_count]
+		
+		String query = "SELECT " +
+					  "SUM(CASE WHEN a.attendance_status = 'P' THEN 1 ELSE 0 END) as present_count, " +
+					  "COUNT(*) as total_count " +
+					  "FROM " + ATTENDANCE_TABLE + " a " +
+					  "WHERE a.attendance_student_id = ? " +
+					  "AND a.attendance_session_id = ?";
+		
+		Cursor cursor = db.rawQuery(query, new String[]{
+			studentId, String.valueOf(sessionId)
+		});
+
+		if (cursor.moveToFirst()) {
+			counts[0] = cursor.getInt(0); // present_count
+			counts[1] = cursor.getInt(1); // total_count
+		}
+		cursor.close();
+		return counts;
+	}
+
+	public int[] getTotalAttendanceCount(String studentId, String subject, String session) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		int[] counts = new int[2]; // [present_count, total_count]
+		
+		String query = "SELECT " +
+					  "SUM(CASE WHEN a.attendance_status = 'P' THEN 1 ELSE 0 END) as present_count, " +
+					  "COUNT(*) as total_count " +
+					  "FROM " + ATTENDANCE_TABLE + " a " +
+					  "JOIN " + ATTENDANCE_SESSION_TABLE + " ast ON a.attendance_session_id = ast.attendance_session_id " +
+					  "WHERE a.attendance_student_id = ? " +
+					  "AND ast.attendance_session_subject = ? " +
+					  "AND a." + KEY_SESSION + " = ?";
+		
+		Log.d("DBAdapter", "Query: " + query);
+		Log.d("DBAdapter", "Parameters - StudentID: " + studentId + 
+							", Subject: " + subject + 
+							", Session: " + session);
+		
+		Cursor cursor = db.rawQuery(query, new String[]{studentId, subject, session});
+		Log.d("DBAdapter", "Found " + cursor.getCount() + " records");
+
+		if (cursor.moveToFirst()) {
+			// Check for null values
+			int presentCount = cursor.isNull(0) ? 0 : cursor.getInt(0);
+			int totalCount = cursor.isNull(1) ? 0 : cursor.getInt(1);
+			
+			counts[0] = presentCount;
+			counts[1] = totalCount;
+			
+			Log.d("DBAdapter", "Present: " + counts[0] + ", Total: " + counts[1]);
+		} else {
+			Log.d("DBAdapter", "No records found");
+			counts[0] = 0;
+			counts[1] = 0;
+		}
+		cursor.close();
+		return counts;
+	}
+
 }

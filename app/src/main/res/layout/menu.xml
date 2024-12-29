@@ -55,6 +55,14 @@
         android:text="View Faculty Registrations"
         android:visibility="gone" />
 
+    <Button
+        android:id="@+id/viewAllAttendanceButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@drawable/roundedbutton"
+        android:text="View All Faculty Attendance" />
+
     <!-- Add weight to push logout button to bottom -->
     <Space
         android:layout_width="match_parent"

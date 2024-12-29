@@ -62,6 +62,17 @@ public class MenuActivity extends Activity {
 					}
 				});
 			}
+
+			Button viewAllAttendanceButton = (Button) findViewById(R.id.viewAllAttendanceButton);
+			if (viewAllAttendanceButton != null) {
+				viewAllAttendanceButton.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(MenuActivity.this, ViewAllAttendanceActivity.class);
+						startActivity(intent);
+					}
+				});
+			}
 		} else {
 			// Faculty panel configuration
 			addFaculty.setVisibility(View.GONE);

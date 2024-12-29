@@ -85,7 +85,7 @@
             android:name="com.android.attendance.activity.ViewFacultyRegistrationsActivity"
             android:label="@string/app_name" >
         </activity>
-        
+        <activity android:name="com.android.attendance.activity.ViewAllAttendanceActivity" />
     </application>
 
 </manifest>

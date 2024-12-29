@@ -8,6 +8,8 @@ public class AttendanceBean {
 	private String student_firstname;
 	private String student_lastname;
 	private String attendance_session_date;
+	private String faculty_name;
+	private String subject;
 	
 	public long getAttendance_session_id() {
 		return attendance_session_id;
@@ -44,5 +46,17 @@ public class AttendanceBean {
 	}
 	public void setAttendance_session_date(String attendance_session_date) {
 		this.attendance_session_date = attendance_session_date;
+	}
+	public String getFaculty_name() {
+		return faculty_name;
+	}
+	public void setFaculty_name(String faculty_name) {
+		this.faculty_name = faculty_name;
+	}
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 }

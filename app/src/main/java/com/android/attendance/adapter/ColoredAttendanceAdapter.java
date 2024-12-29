@@ -19,19 +19,31 @@ public class ColoredAttendanceAdapter extends ArrayAdapter<String> {
         TextView view = (TextView) super.getView(position, convertView, parent);
         String text = getItem(position);
         
-        if (text.contains("Date:") || text.contains("Subject:")) {
+        // Headers and summary section should be black
+        if (text.startsWith("Date:") || 
+            text.startsWith("Attendance Summary") || 
+            text.startsWith("\nDetailed Attendance")) {
             view.setText(text);
             view.setTextColor(Color.BLACK);
             view.setTextSize(16);
             return view;
         }
 
-        String[] parts = text.split(" \\| ");
-        if (parts.length == 2) {
-            String studentInfo = parts[0];
-            String status = parts[1].trim();
-
-            view.setText(studentInfo + " | ");
+        // Split the text at the last pipe symbol
+        int lastPipeIndex = text.lastIndexOf("|");
+        if (lastPipeIndex != -1) {
+            String info = text.substring(0, lastPipeIndex + 1);
+            String status = text.substring(lastPipeIndex + 1).trim();
+            
+            // If it contains percentage, it's a summary line - keep it black
+            if (status.contains("%")) {
+                view.setText(text);
+                view.setTextColor(Color.BLACK);
+                return view;
+            }
+            
+            // Otherwise it's a detailed attendance entry - apply color
+            view.setText(info + " ");
             if (status.equals("P")) {
                 view.append("P");
                 view.setTextColor(Color.rgb(0, 150, 0));  // Dark Green

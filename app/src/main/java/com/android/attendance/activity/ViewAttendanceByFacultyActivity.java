@@ -3,6 +3,9 @@ package com.android.attendance.activity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,6 +35,7 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 	private ArrayAdapter<String> listAdapter;
 	private String currentSession;
 	private TextView dateHeaderTextView;
+	private DBAdapter dbAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,55 +53,110 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 
 		listView = findViewById(R.id.listview);
 		dateHeaderTextView = findViewById(R.id.dateHeaderTextView);
+		dbAdapter = new DBAdapter(this);
 		
+		// Get attendance session bean from intent
+		ArrayList<AttendanceBean> attendanceBeanList = 
+			((ApplicationContext)getApplicationContext()).getAttendanceBeanList();
+		
+		if (attendanceBeanList == null || attendanceBeanList.isEmpty()) {
+			Toast.makeText(this, "No attendance data found", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
 		// Set header
 		dateHeaderTextView.setText("Subject: " + selectedSubject);
 
-		ArrayList<AttendanceBean> attendanceBeanList = 
-			((ApplicationContext) getApplicationContext()).getAttendanceBeanList();
+		ArrayList<String> attendanceList = new ArrayList<String>();
+		
+		// Get unique students
+		Set<String> uniqueStudents = new HashSet<>();
+		for(AttendanceBean attendance : attendanceBeanList) {
+			uniqueStudents.add(attendance.getAttendance_student_id());
+		}
+
+		Log.d("ViewAttendance", "Found " + uniqueStudents.size() + " unique students");
+
+		// After getting unique students, create a list of StudentBean objects for sorting
+		ArrayList<StudentBean> sortedStudents = new ArrayList<>();
+		for(String studentId : uniqueStudents) {
+			sortedStudents.add(dbAdapter.getStudentById(studentId));
+		}
+
+		// Sort students by enrollment number
+		Collections.sort(sortedStudents, new Comparator<StudentBean>() {
+			@Override
+			public int compare(StudentBean s1, StudentBean s2) {
+				return s1.getStudent_enrollment().compareTo(s2.getStudent_enrollment());
+			}
+		});
+
+		// First add the summary section
+		attendanceList.add("Attendance Summary\n");
+
+		// Add summary for each student (now in sorted order)
+		for(StudentBean student : sortedStudents) {
+			int[] totalCounts = dbAdapter.getTotalAttendanceCount(
+				student.getStudent_enrollment(), 
+				selectedSubject, 
+				currentSession
+			);
+			
+			Log.d("ViewAttendance", String.format(Locale.getDefault(), 
+				"Student: %s, ID: %s, Subject: %s, Session: %s", 
+				student.getStudent_firstname(),
+				student.getStudent_enrollment(),
+				selectedSubject,
+				currentSession));
+			Log.d("ViewAttendance", "Present: " + totalCounts[0] + ", Total: " + totalCounts[1]);
+
+			String summaryInfo = String.format(Locale.getDefault(),
+					"%s %s (%s) | %d/%d  (%.1f%%)",
+					student.getStudent_firstname(),
+					student.getStudent_lastname(),
+					student.getStudent_enrollment(),
+					totalCounts[0],
+					totalCounts[1],
+					(totalCounts[1] > 0 ? (totalCounts[0] * 100.0 / totalCounts[1]) : 0));
+
+			attendanceList.add(summaryInfo);
+		}
+
+		// Add separator
+		attendanceList.add("\nDetailed Attendance\n");
 
 		// Sort attendance by date first, then by enrollment number
 		Collections.sort(attendanceBeanList, new Comparator<AttendanceBean>() {
 			@Override
 			public int compare(AttendanceBean a1, AttendanceBean a2) {
-				// First compare by date
-				int dateCompare = a1.getAttendance_session_date().compareTo(a2.getAttendance_session_date());
-				if (dateCompare != 0) {
-					return dateCompare;
-				}
-				// If same date, compare by enrollment number
+				int dateCompare = a2.getAttendance_session_date().compareTo(a1.getAttendance_session_date());
+				if (dateCompare != 0) return dateCompare;
 				return a1.getAttendance_student_id().compareTo(a2.getAttendance_student_id());
 			}
 		});
 
-		ArrayList<String> attendanceList = new ArrayList<String>();
+		// Add detailed attendance
 		String currentDate = null;
-
-		if (attendanceBeanList != null && !attendanceBeanList.isEmpty()) {
-			DBAdapter dbAdapter = new DBAdapter(this);
-			
-			for (AttendanceBean attendanceBean : attendanceBeanList) {
-				// Add date header if it's a new date
-				if (currentDate == null || !currentDate.equals(attendanceBean.getAttendance_session_date())) {
-					currentDate = attendanceBean.getAttendance_session_date();
-					attendanceList.add("\nDate: " + currentDate + "\n");
-				}
-				
-				StudentBean studentBean = dbAdapter.getStudentById(attendanceBean.getAttendance_student_id());
-				String status = attendanceBean.getAttendance_status();
-				String attendanceInfo = String.format("%s %s (%s) | %s",
-					studentBean.getStudent_firstname(),
-						studentBean.getStudent_lastname(),
-						studentBean.getStudent_enrollment(),
-						status);
-				attendanceList.add(attendanceInfo);
+		for(AttendanceBean attendanceBean : attendanceBeanList) {
+			if (currentDate == null || !currentDate.equals(attendanceBean.getAttendance_session_date())) {
+				currentDate = attendanceBean.getAttendance_session_date();
+				attendanceList.add("\nDate: " + currentDate + "\n");
 			}
-		} else {
-			attendanceList.add("No attendance records found");
+
+			StudentBean studentBean = dbAdapter.getStudentById(attendanceBean.getAttendance_student_id());
+			String status = attendanceBean.getAttendance_status();
+			String attendanceInfo = String.format(Locale.getDefault(),
+				"%s %s (%s) | %s",
+				studentBean.getStudent_firstname(),
+				studentBean.getStudent_lastname(),
+				studentBean.getStudent_enrollment(),
+				status);
+			
+			attendanceList.add(attendanceInfo);
 		}
 
-		listAdapter = new ColoredAttendanceAdapter(this, 
-			R.layout.view_attendance_list_per_student, 
+		listAdapter = new ColoredAttendanceAdapter(this,
+			R.layout.view_attendance_list_per_student,
 			R.id.labelAttendancePerStudent,
 			attendanceList);
 		listView.setAdapter(listAdapter);
