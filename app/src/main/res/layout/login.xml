@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/clg"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Login"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <!-- Role Spinner -->
+    <TextView
+        android:id="@+id/roleLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleTextView"
+        android:layout_marginTop="50dp"
+        android:text="Select Role"
+        android:textColor="#000000" />
+
+    <Spinner
+        android:id="@+id/spinnerloginas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/roleLabel"
+        android:layout_marginTop="8dp"
+        android:background="#ffffff"
+        android:padding="8dp" />
+
+    <!-- Session Spinner -->
+    <TextView
+        android:id="@+id/sessionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerloginas"
+        android:layout_marginTop="20dp"
+        android:text="Select Session"
+        android:textColor="#000000" />
+
+    <Spinner
+        android:id="@+id/spinnerSession"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sessionLabel"
+        android:layout_marginTop="8dp"
+        android:background="#ffffff"
+        android:padding="8dp" />
+
+    <!-- Username -->
+    <TextView
+        android:id="@+id/usernameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerSession"
+        android:layout_marginTop="20dp"
+        android:text="Username"
+        android:textColor="#000000" />
+
+    <EditText
+        android:id="@+id/editTextusername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/usernameLabel"
+        android:layout_marginTop="8dp"
+        android:background="#ffffff"
+        android:hint="Enter Username"
+        android:padding="8dp"
+        android:singleLine="true" />
+
+    <!-- Password -->
+    <TextView
+        android:id="@+id/passwordLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextusername"
+        android:layout_marginTop="20dp"
+        android:text="Password"
+        android:textColor="#000000" />
+
+    <EditText
+        android:id="@+id/editTextpassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/passwordLabel"
+        android:layout_marginTop="8dp"
+        android:background="#ffffff"
+        android:hint="Enter Password"
+        android:inputType="textPassword"
+        android:padding="8dp"
+        android:singleLine="true" />
+
+    <!-- Login Button -->
+    <Button
+        android:id="@+id/buttonlogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextpassword"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/roundedbutton"
+        android:text="Login"
+        android:textColor="#ffffff" />
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonlogin"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/roundedbutton"
+        android:text="Register as New Faculty"
+        android:textColor="#ffffff"
+        android:visibility="gone" />
+
+</RelativeLayout>

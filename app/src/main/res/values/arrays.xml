@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="branches_array">
+        <item>IT</item>
+    </string-array>
+
+    <string-array name="years_array">
+        <item>1Y</item>
+        <item>2Y</item>
+        <item>3Y</item>
+        <item>4Y</item>
+    </string-array>
+</resources> 
