@@ -13,7 +13,7 @@ import com.android.attendance.db.DBAdapter;
 import com.example.androidattendancesystem.R;
 
 public class FacultyRegistrationActivity extends Activity {
-    private EditText firstNameEditText, lastNameEditText, phoneEditText, addressEditText, usernameEditText, passwordEditText, subjectEditText;
+    private EditText firstNameEditText, lastNameEditText, phoneEditText, addressEditText, usernameEditText, passwordEditText;
     private Button registerButton;
 
     @Override
@@ -27,7 +27,6 @@ public class FacultyRegistrationActivity extends Activity {
         addressEditText = findViewById(R.id.addressEditText);
         usernameEditText = findViewById(R.id.usernameEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
-        subjectEditText = findViewById(R.id.subjectEditText);
         registerButton = findViewById(R.id.registerButton);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
@@ -45,10 +44,9 @@ public class FacultyRegistrationActivity extends Activity {
         String address = addressEditText.getText().toString().trim();
         String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
-        String subject = subjectEditText.getText().toString().trim();
 
         if (firstName.isEmpty() || lastName.isEmpty() || phone.isEmpty() || address.isEmpty() || 
-            username.isEmpty() || password.isEmpty() || subject.isEmpty()) {
+            username.isEmpty() || password.isEmpty()) {
             Toast.makeText(FacultyRegistrationActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -60,7 +58,6 @@ public class FacultyRegistrationActivity extends Activity {
         facultyBean.setFaculty_address(address);
         facultyBean.setFaculty_username(username);
         facultyBean.setFaculty_password(password);
-        facultyBean.setFaculty_subject(subject);
 
         DBAdapter dbAdapter = new DBAdapter(FacultyRegistrationActivity.this);
         long result = dbAdapter.addFacultyRegistrationRequest(facultyBean);

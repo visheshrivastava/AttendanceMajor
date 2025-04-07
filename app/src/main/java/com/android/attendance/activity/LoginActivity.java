@@ -55,10 +55,10 @@ public class LoginActivity extends Activity {
 
 		// Set up session spinner
 		String[] sessions = new String[]{
-			"2024-25 Odd Semester",
-			"2024-25 Even Semester",
 			"2025-26 Odd Semester",
-			"2025-26 Even Semester"
+			"2025-26 Even Semester",
+			"2026-27 Odd Semester",
+			"2026-27 Even Semester"
 		};
 		ArrayAdapter<String> sessionAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, sessions);

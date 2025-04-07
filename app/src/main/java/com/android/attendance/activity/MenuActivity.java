@@ -63,6 +63,19 @@ public class MenuActivity extends Activity {
 				});
 			}
 
+			// Add button for assigning subjects to faculty
+			Button assignFacultySubjectButton = findViewById(R.id.assignFacultySubjectButton);
+			if (assignFacultySubjectButton != null) {
+				assignFacultySubjectButton.setVisibility(View.VISIBLE);
+				assignFacultySubjectButton.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(MenuActivity.this, AssignFacultySubjectActivity.class);
+						startActivity(intent);
+					}
+				});
+			}
+
 			Button viewAllAttendanceButton = (Button) findViewById(R.id.viewAllAttendanceButton);
 			if (viewAllAttendanceButton != null) {
 				viewAllAttendanceButton.setOnClickListener(new OnClickListener() {
@@ -80,6 +93,10 @@ public class MenuActivity extends Activity {
 			Button viewFacultyRegistrationsButton = findViewById(R.id.viewFacultyRegistrationsButton);
 			if (viewFacultyRegistrationsButton != null) {
 				viewFacultyRegistrationsButton.setVisibility(View.GONE);
+			}
+			Button assignFacultySubjectButton = findViewById(R.id.assignFacultySubjectButton);
+			if (assignFacultySubjectButton != null) {
+				assignFacultySubjectButton.setVisibility(View.GONE);
 			}
 		}
 

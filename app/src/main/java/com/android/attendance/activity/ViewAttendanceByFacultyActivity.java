@@ -6,17 +6,25 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Locale;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.TextView;
@@ -28,6 +36,15 @@ import com.android.attendance.context.ApplicationContext;
 import com.android.attendance.db.DBAdapter;
 import com.example.androidattendancesystem.R;
 import com.android.attendance.adapter.ColoredAttendanceAdapter;
+import android.Manifest;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.content.Intent;
+import android.net.Uri;
+import android.content.ContentValues;
+import android.provider.MediaStore;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 public class ViewAttendanceByFacultyActivity extends Activity {
 
@@ -36,6 +53,11 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 	private String currentSession;
 	private TextView dateHeaderTextView;
 	private DBAdapter dbAdapter;
+	private Button exportButton;
+	private String selectedSubject;
+	private static final int PERMISSION_REQUEST_CODE = 123;
+	private ArrayList<StudentBean> sortedStudents;
+	private ArrayList<AttendanceBean> attendanceBeanList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +65,7 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 		setContentView(R.layout.view_attendance_list);
 
 		currentSession = getIntent().getStringExtra("session");
-		String selectedSubject = getIntent().getStringExtra("subject");
+		selectedSubject = getIntent().getStringExtra("subject");
 		
 		if (currentSession == null) {
 				Toast.makeText(this, "No session selected", Toast.LENGTH_SHORT).show();
@@ -56,8 +78,7 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 		dbAdapter = new DBAdapter(this);
 		
 		// Get attendance session bean from intent
-		ArrayList<AttendanceBean> attendanceBeanList = 
-			((ApplicationContext)getApplicationContext()).getAttendanceBeanList();
+		attendanceBeanList = ((ApplicationContext)getApplicationContext()).getAttendanceBeanList();
 		
 		if (attendanceBeanList == null || attendanceBeanList.isEmpty()) {
 			Toast.makeText(this, "No attendance data found", Toast.LENGTH_SHORT).show();
@@ -69,7 +90,7 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 
 		ArrayList<String> attendanceList = new ArrayList<String>();
 		
-		// Get unique students
+		// Get unique students and create sorted list
 		Set<String> uniqueStudents = new HashSet<>();
 		for(AttendanceBean attendance : attendanceBeanList) {
 			uniqueStudents.add(attendance.getAttendance_student_id());
@@ -77,8 +98,8 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 
 		Log.d("ViewAttendance", "Found " + uniqueStudents.size() + " unique students");
 
-		// After getting unique students, create a list of StudentBean objects for sorting
-		ArrayList<StudentBean> sortedStudents = new ArrayList<>();
+		// Create sorted students list
+		sortedStudents = new ArrayList<>();
 		for(String studentId : uniqueStudents) {
 			sortedStudents.add(dbAdapter.getStudentById(studentId));
 		}
@@ -160,6 +181,18 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 			R.id.labelAttendancePerStudent,
 			attendanceList);
 		listView.setAdapter(listAdapter);
+
+		exportButton = findViewById(R.id.exportButton);
+		exportButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (checkPermission()) {
+					exportToCSV();
+				} else {
+					requestPermission();
+				}
+			}
+		});
 	}
 
 	private void showEditDialog(final AttendanceBean attendance) {
@@ -192,6 +225,202 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+
+	private boolean checkPermission() {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			int result = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+			return result == PackageManager.PERMISSION_GRANTED;
+		}
+		return true;
+	}
+
+	private void requestPermission() {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			// Check if we already have permission
+			if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+				// Show explanation if needed
+				if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setTitle("Storage Permission Needed");
+					builder.setMessage("This permission is required to save the attendance CSV file.");
+					builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							requestPermissions(
+								new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+								PERMISSION_REQUEST_CODE
+							);
+						}
+					});
+					builder.show();
+				} else {
+					// No explanation needed, request the permission
+					requestPermissions(
+						new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+						PERMISSION_REQUEST_CODE
+					);
+				}
+			} else {
+				exportToCSV();
+			}
+		} else {
+			exportToCSV();
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		if (requestCode == PERMISSION_REQUEST_CODE) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				exportToCSV();
+			} else {
+				Toast.makeText(this, 
+					"Storage permission is required to export attendance", 
+					Toast.LENGTH_LONG).show();
+				
+				// Show settings dialog if permission was permanently denied
+				if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setTitle("Permission Required");
+					builder.setMessage("Storage permission is required but has been permanently denied. " +
+									"Please enable it in Settings.");
+					builder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// Open app settings
+							Intent intent = new Intent();
+							intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+							Uri uri = Uri.fromParts("package", getPackageName(), null);
+							intent.setData(uri);
+							startActivity(intent);
+						}
+					});
+					builder.setNegativeButton("Cancel", null);
+					builder.show();
+				}
+			}
+		}
+	}
+
+	private void exportToCSV() {
+		try {
+			String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", 
+				Locale.getDefault()).format(new Date());
+			String fileName = "attendance_" + selectedSubject + "_" + timeStamp + ".csv";
+
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+				ContentValues values = new ContentValues();
+				values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+				values.put(MediaStore.MediaColumns.MIME_TYPE, "text/csv");
+				values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+				Uri uri = getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
+				if (uri != null) {
+					try (OutputStream outputStream = getContentResolver().openOutputStream(uri);
+						 OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+
+						// Write summary section
+						writer.write("Attendance Summary for " + selectedSubject + "\n\n");
+						writer.write("Name,Enrollment,Present,Total,Percentage\n");
+
+						// Get unique students and their attendance counts
+						for (StudentBean student : sortedStudents) {
+							int[] totalCounts = dbAdapter.getTotalAttendanceCount(
+								student.getStudent_enrollment(), 
+								selectedSubject, 
+								currentSession
+							);
+							
+							double percentage = totalCounts[1] > 0 ? 
+								(totalCounts[0] * 100.0 / totalCounts[1]) : 0;
+
+							writer.write(String.format("%s %s,%s,%d,%d,%.1f%%\n",
+								student.getStudent_firstname(),
+								student.getStudent_lastname(),
+								student.getStudent_enrollment(),
+								totalCounts[0],
+								totalCounts[1],
+								percentage));
+						}
+
+						// Write detailed section
+						writer.write("\nDetailed Attendance\n");
+						writer.write("Date,Name,Enrollment,Status\n");
+
+						for (AttendanceBean attendance : attendanceBeanList) {
+							StudentBean student = dbAdapter.getStudentById(
+								attendance.getAttendance_student_id());
+							
+							writer.write(String.format("%s,%s %s,%s,%s\n",
+								attendance.getAttendance_session_date(),
+								student.getStudent_firstname(),
+								student.getStudent_lastname(),
+								student.getStudent_enrollment(),
+								attendance.getAttendance_status()));
+						}
+
+						writer.flush();
+						Toast.makeText(this, "File exported to Downloads/" + fileName, 
+							Toast.LENGTH_LONG).show();
+					}
+				}
+			} else {
+				// For older Android versions
+				File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+				File file = new File(downloadsDir, fileName);
+
+				try (FileWriter writer = new FileWriter(file)) {
+					// Write summary section
+					writer.append("Attendance Summary for " + selectedSubject + "\n\n");
+					writer.append("Name,Enrollment,Present,Total,Percentage\n");
+
+					// Get unique students and their attendance counts
+					for (StudentBean student : sortedStudents) {
+						int[] totalCounts = dbAdapter.getTotalAttendanceCount(
+							student.getStudent_enrollment(), 
+							selectedSubject, 
+							currentSession
+						);
+						
+						double percentage = totalCounts[1] > 0 ? 
+							(totalCounts[0] * 100.0 / totalCounts[1]) : 0;
+
+						writer.append(String.format("%s %s,%s,%d,%d,%.1f%%\n",
+							student.getStudent_firstname(),
+							student.getStudent_lastname(),
+							student.getStudent_enrollment(),
+							totalCounts[0],
+							totalCounts[1],
+							percentage));
+					}
+
+					// Write detailed section
+					writer.append("\nDetailed Attendance\n");
+					writer.append("Date,Name,Enrollment,Status\n");
+
+					for (AttendanceBean attendance : attendanceBeanList) {
+						StudentBean student = dbAdapter.getStudentById(
+							attendance.getAttendance_student_id());
+						
+						writer.append(String.format("%s,%s %s,%s,%s\n",
+							attendance.getAttendance_session_date(),
+							student.getStudent_firstname(),
+							student.getStudent_lastname(),
+							student.getStudent_enrollment(),
+							attendance.getAttendance_status()));
+					}
+
+					writer.flush();
+					Toast.makeText(this, "Exported to " + file.getAbsolutePath(), 
+						Toast.LENGTH_LONG).show();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			Toast.makeText(this, "Export failed: " + e.getMessage(), 
+				Toast.LENGTH_SHORT).show();
+		}
 	}
 
 }

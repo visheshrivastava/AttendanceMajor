@@ -53,7 +53,16 @@
         android:layout_margin="8dp"
         android:background="@drawable/roundedbutton"
         android:text="View Faculty Registrations"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/assignFacultySubjectButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Assign Subjects to Faculty"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp"/>
 
     <Button
         android:id="@+id/viewAllAttendanceButton"
@@ -61,7 +70,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:background="@drawable/roundedbutton"
-        android:text="View All Faculty Attendance" />
+        android:text="View All Faculty Attendance"
+        android:layout_marginBottom="8dp"/>
 
     <!-- Add weight to push logout button to bottom -->
     <Space

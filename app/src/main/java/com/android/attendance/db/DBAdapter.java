@@ -19,7 +19,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 
 	// All Static variables
 	// Database Version
-	private static final int DATABASE_VERSION = 13; // Increment from 12 to 13
+	private static final int DATABASE_VERSION = 14; // Increment from 13 to 14
 
 	// Database Name
 	private static final String DATABASE_NAME = "Attendance.db";
@@ -31,9 +31,13 @@ public class DBAdapter extends SQLiteOpenHelper {
 	private static final String ATTENDANCE_TABLE = "attendance_table";
 	private static final String FACULTY_REGISTRATION_TABLE = "faculty_registration";
 
+	// Add new table for faculty subject assignments
+	private static final String FACULTY_SUBJECT_TABLE = "faculty_subject_table";
+	private static final String KEY_FACULTY_ID = "faculty_id";
+	private static final String KEY_YEAR = "year";
+	private static final String KEY_SUBJECT = "subject";
 
 	// Contacts Table Columns names
-	private static final String KEY_FACULTY_ID = "faculty_id";
 	private static final String KEY_FACULTY_FIRSTNAME = "faculty_firstname";
 	private static final String KEY_FACULTY_LASTNAME = "faculty_Lastname";
 	private static final String KEY_FACULTY_MO_NO = "faculty_mobilenumber";
@@ -84,15 +88,16 @@ public class DBAdapter extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// Drop all existing tables
-		db.execSQL("DROP TABLE IF EXISTS " + STUDENT_INFO_TABLE);
+		// Drop older tables if existed
 		db.execSQL("DROP TABLE IF EXISTS " + FACULTY_INFO_TABLE);
+		db.execSQL("DROP TABLE IF EXISTS " + STUDENT_INFO_TABLE);
 		db.execSQL("DROP TABLE IF EXISTS " + ATTENDANCE_SESSION_TABLE);
 		db.execSQL("DROP TABLE IF EXISTS " + ATTENDANCE_TABLE);
 		db.execSQL("DROP TABLE IF EXISTS " + FACULTY_REGISTRATION_TABLE);
+		db.execSQL("DROP TABLE IF EXISTS " + FACULTY_SUBJECT_TABLE);
 
-		// Recreate all tables
-		createTables(db);
+		// Create tables again
+		onCreate(db);
 	}
 
 	private void createTables(SQLiteDatabase db) {
@@ -150,6 +155,15 @@ public class DBAdapter extends SQLiteOpenHelper {
 				+ KEY_FACULTY_SUBJECT + " TEXT, "
 				+ KEY_FACULTY_REG_STATUS + " TEXT" + ")";
 		db.execSQL(CREATE_FACULTY_REGISTRATION_TABLE);
+
+		// Create faculty subject assignment table
+		String CREATE_FACULTY_SUBJECT_TABLE = "CREATE TABLE IF NOT EXISTS " + FACULTY_SUBJECT_TABLE + "("
+				+ KEY_FACULTY_ID + " INTEGER, "
+				+ KEY_YEAR + " TEXT, "
+				+ KEY_SUBJECT + " TEXT, "
+				+ "FOREIGN KEY(" + KEY_FACULTY_ID + ") REFERENCES " + FACULTY_INFO_TABLE + "(" + KEY_FACULTY_ID + ")"
+				+ ")";
+		db.execSQL(CREATE_FACULTY_SUBJECT_TABLE);
 	}
 
 	//facult crud
@@ -193,7 +207,9 @@ public class DBAdapter extends SQLiteOpenHelper {
 
 	public ArrayList<FacultyBean> getAllFaculty() {
 		ArrayList<FacultyBean> list = new ArrayList<>();
-		String selectQuery = "SELECT * FROM " + FACULTY_INFO_TABLE;
+		String selectQuery = "SELECT f.*, fs.subject, fs.year " +
+							"FROM " + FACULTY_INFO_TABLE + " f " +
+							"LEFT JOIN " + FACULTY_SUBJECT_TABLE + " fs ON f." + KEY_FACULTY_ID + " = fs." + KEY_FACULTY_ID;
 		
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
@@ -208,7 +224,16 @@ public class DBAdapter extends SQLiteOpenHelper {
 				faculty.setFaculty_address(cursor.getString(cursor.getColumnIndex(KEY_FACULTY_ADDRESS)));
 				faculty.setFaculty_username(cursor.getString(cursor.getColumnIndex(KEY_FACULTY_USERNAME)));
 				faculty.setFaculty_password(cursor.getString(cursor.getColumnIndex(KEY_FACULTY_PASSWORD)));
-				faculty.setFaculty_subject(cursor.getString(cursor.getColumnIndex(KEY_FACULTY_SUBJECT)));
+				
+				// Get subject from faculty_subject_table
+				String subject = cursor.getString(cursor.getColumnIndex(KEY_SUBJECT));
+				String year = cursor.getString(cursor.getColumnIndex(KEY_YEAR));
+				if (subject != null && year != null) {
+					faculty.setFaculty_subject(subject + " (" + year + ")");
+				} else {
+					faculty.setFaculty_subject("No subject assigned");
+				}
+				
 				list.add(faculty);
 			} while (cursor.moveToNext());
 		}
@@ -635,7 +660,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 				faculty.setFaculty_address(cursor.getString(cursor.getColumnIndex(KEY_FACULTY_ADDRESS)));
 				faculty.setFaculty_username(cursor.getString(cursor.getColumnIndex(KEY_FACULTY_USERNAME)));
 				faculty.setFaculty_password(cursor.getString(cursor.getColumnIndex(KEY_FACULTY_PASSWORD)));
-				faculty.setFaculty_subject(cursor.getString(cursor.getColumnIndex(KEY_FACULTY_SUBJECT)));
+				faculty.setFaculty_subject("No subject assigned");
 				list.add(faculty);
 			} while (cursor.moveToNext());
 		}
@@ -965,6 +990,39 @@ public class DBAdapter extends SQLiteOpenHelper {
 		}
 		cursor.close();
 		return counts;
+	}
+
+	public boolean assignFacultySubject(int facultyId, String year, String subject) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(KEY_FACULTY_ID, facultyId);
+		values.put(KEY_YEAR, year);
+		values.put(KEY_SUBJECT, subject);
+
+		long result = db.insert(FACULTY_SUBJECT_TABLE, null, values);
+		db.close();
+		return result != -1;
+	}
+
+	public ArrayList<String> getAssignedSubjectsForFaculty(int facultyId) {
+		ArrayList<String> subjects = new ArrayList<>();
+		SQLiteDatabase db = this.getReadableDatabase();
+		
+		String query = "SELECT " + KEY_SUBJECT + ", " + KEY_YEAR + 
+					  " FROM " + FACULTY_SUBJECT_TABLE + 
+					  " WHERE " + KEY_FACULTY_ID + " = ?";
+		
+		Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(facultyId)});
+		
+		if (cursor.moveToFirst()) {
+			do {
+				String subject = cursor.getString(cursor.getColumnIndex(KEY_SUBJECT));
+				String year = cursor.getString(cursor.getColumnIndex(KEY_YEAR));
+				subjects.add(subject + " (" + year + ")");
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		return subjects;
 	}
 
 }

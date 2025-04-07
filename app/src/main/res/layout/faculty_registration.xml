@@ -53,14 +53,6 @@
         android:inputType="textPassword"
         android:layout_marginBottom="16dp"/>
 
-    <EditText
-        android:id="@+id/subjectEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Subject"
-        android:inputType="text"
-        android:layout_marginBottom="8dp"/>
-
     <Button
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
