@@ -11,6 +11,7 @@ public class AttendanceSessionBean implements Serializable {
 	private String attendance_session_class;
 	private String attendance_session_date;
 	private String attendance_session_subject;
+	private int numberOfClasses;
 	
 	public long getAttendance_session_id() {
 		return attendance_session_id;
@@ -48,6 +49,12 @@ public class AttendanceSessionBean implements Serializable {
 	}
 	public void setAttendance_session_subject(String attendance_session_subject) {
 		this.attendance_session_subject = attendance_session_subject;
+	}
+	public int getNumberOfClasses() {
+		return numberOfClasses;
+	}
+	public void setNumberOfClasses(int numberOfClasses) {
+		this.numberOfClasses = numberOfClasses;
 	}
 	
 	

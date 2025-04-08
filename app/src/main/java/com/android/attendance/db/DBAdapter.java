@@ -19,7 +19,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 
 	// All Static variables
 	// Database Version
-	private static final int DATABASE_VERSION = 14; // Increment from 13 to 14
+	private static final int DATABASE_VERSION = 15; // Increment from 13 to 14
 
 	// Database Name
 	private static final String DATABASE_NAME = "Attendance.db";
@@ -62,6 +62,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 	private static final String KEY_ATTENDANCE_SESSION_CLASS = "attendance_session_class";
 	private static final String KEY_ATTENDANCE_SESSION_DATE = "attendance_session_date";
 	private static final String KEY_ATTENDANCE_SESSION_SUBJECT = "attendance_session_subject";
+	private static final String KEY_NUMBER_OF_CLASSES = "number_of_classes";
 
 	private static final String KEY_SESSION_ID = "attendance_session_id";
 	private static final String KEY_ATTENDANCE_STUDENT_ID = "attendance_student_id";
@@ -132,6 +133,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 				+ KEY_ATTENDANCE_SESSION_CLASS + " TEXT, "
 				+ KEY_ATTENDANCE_SESSION_DATE + " DATE, "
 				+ KEY_ATTENDANCE_SESSION_SUBJECT + " TEXT, "
+				+ KEY_NUMBER_OF_CLASSES + " INTEGER DEFAULT 1, "
 				+ KEY_SESSION + " TEXT" + ")";
 		db.execSQL(CREATE_ATTENDANCE_SESSION_TABLE);
 
@@ -369,17 +371,24 @@ public class DBAdapter extends SQLiteOpenHelper {
 
 	//attendance session Table crud
 	public long addAttendanceSession(AttendanceSessionBean attendanceSessionBean, String session) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		ContentValues values = new ContentValues();
-		
-		values.put(KEY_ATTENDANCE_SESSION_FACULTY_ID, attendanceSessionBean.getAttendance_session_faculty_id());
-		values.put(KEY_ATTENDANCE_SESSION_DEPARTMENT, attendanceSessionBean.getAttendance_session_department());
-		values.put(KEY_ATTENDANCE_SESSION_CLASS, attendanceSessionBean.getAttendance_session_class());
-		values.put(KEY_ATTENDANCE_SESSION_DATE, attendanceSessionBean.getAttendance_session_date());
-		values.put(KEY_ATTENDANCE_SESSION_SUBJECT, attendanceSessionBean.getAttendance_session_subject());
-		values.put(KEY_SESSION, session);
+		try {
+			SQLiteDatabase db = this.getWritableDatabase();
+			ContentValues values = new ContentValues();
+			values.put(KEY_ATTENDANCE_SESSION_FACULTY_ID, attendanceSessionBean.getAttendance_session_faculty_id());
+			values.put(KEY_ATTENDANCE_SESSION_DEPARTMENT, attendanceSessionBean.getAttendance_session_department());
+			values.put(KEY_ATTENDANCE_SESSION_CLASS, attendanceSessionBean.getAttendance_session_class());
+			values.put(KEY_ATTENDANCE_SESSION_DATE, attendanceSessionBean.getAttendance_session_date());
+			values.put(KEY_ATTENDANCE_SESSION_SUBJECT, attendanceSessionBean.getAttendance_session_subject());
+			values.put(KEY_NUMBER_OF_CLASSES, attendanceSessionBean.getNumberOfClasses());
+			values.put(KEY_SESSION, session);
 
-		return db.insert(ATTENDANCE_SESSION_TABLE, null, values);
+			long id = db.insert(ATTENDANCE_SESSION_TABLE, null, values);
+			db.close();
+			return id;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
 	}
 
 	public ArrayList<AttendanceSessionBean> getAllAttendanceSession() {
@@ -455,12 +464,12 @@ public class DBAdapter extends SQLiteOpenHelper {
 		ArrayList<AttendanceBean> list = new ArrayList<>();
 		SQLiteDatabase db = this.getReadableDatabase();
 		
-		String query = "SELECT a.*, ast.attendance_session_date, ast.attendance_session_subject " +
+		String query = "SELECT a.*, ast.attendance_session_date " +
 					  "FROM " + ATTENDANCE_TABLE + " a " +
-					  "JOIN " + ATTENDANCE_SESSION_TABLE + " ast " +
-					  "ON a.attendance_session_id = ast.attendance_session_id " +
-					  "WHERE ast.attendance_session_id = ? AND " +
-					  "a." + KEY_SESSION + " = ?";
+					  "JOIN " + ATTENDANCE_SESSION_TABLE + " ast ON a.attendance_session_id = ast.attendance_session_id " +
+					  "WHERE a.attendance_session_id = ? AND " +
+					  "a." + KEY_SESSION + " = ? " +
+					  "ORDER BY ast.attendance_session_date DESC";
 		
 		Log.d("DBAdapter", "Querying attendance with sessionId: " + sessionId + ", session: " + session);
 		
@@ -473,6 +482,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 				attendanceBean.setAttendance_session_id(cursor.getLong(cursor.getColumnIndex(KEY_SESSION_ID)));
 				attendanceBean.setAttendance_student_id(cursor.getString(cursor.getColumnIndex(KEY_ATTENDANCE_STUDENT_ID)));
 				attendanceBean.setAttendance_status(cursor.getString(cursor.getColumnIndex(KEY_ATTENDANCE_STATUS)));
+				attendanceBean.setAttendance_session_date(cursor.getString(cursor.getColumnIndex(KEY_ATTENDANCE_SESSION_DATE)));
 				list.add(attendanceBean);
 			} while (cursor.moveToNext());
 		}
@@ -480,45 +490,39 @@ public class DBAdapter extends SQLiteOpenHelper {
 		return list;
 	}
 	
-	public ArrayList<AttendanceBean> getTotalAttendanceBySessionID(AttendanceSessionBean attendanceSessionBean)
-	{
-		int attendanceSessionId=0;
+	public ArrayList<AttendanceBean> getTotalAttendanceBySessionID(AttendanceSessionBean attendanceSessionBean) {
 		ArrayList<AttendanceBean> list = new ArrayList<AttendanceBean>();
+		SQLiteDatabase db = this.getReadableDatabase();
+		
+		String query = "SELECT a.*, ast.attendance_session_date " +
+					  "FROM " + ATTENDANCE_TABLE + " a " +
+					  "JOIN " + ATTENDANCE_SESSION_TABLE + " ast ON a.attendance_session_id = ast.attendance_session_id " +
+					  "WHERE ast.attendance_session_faculty_id = ? " +
+					  "AND ast.attendance_session_department = ? " +
+					  "AND ast.attendance_session_class = ? " +
+					  "AND ast.attendance_session_subject = ? " +
+					  "ORDER BY ast.attendance_session_date DESC, a.attendance_student_id";
+		
+		String[] params = new String[]{
+			String.valueOf(attendanceSessionBean.getAttendance_session_faculty_id()),
+			attendanceSessionBean.getAttendance_session_department(),
+			attendanceSessionBean.getAttendance_session_class(),
+			attendanceSessionBean.getAttendance_session_subject()
+		};
+		
+		Cursor cursor = db.rawQuery(query, params);
 
-		SQLiteDatabase db = this.getWritableDatabase();
-		String query = "SELECT * FROM attendance_session_table where attendance_session_faculty_id="+attendanceSessionBean.getAttendance_session_faculty_id()+""
-				+" AND attendance_session_department='"+attendanceSessionBean.getAttendance_session_department()+"' AND attendance_session_class='"+attendanceSessionBean.getAttendance_session_class()+"'" +
-						" AND attendance_session_subject='"+attendanceSessionBean.getAttendance_session_subject()+"'";
-		Cursor cursor = db.rawQuery(query, null);
-
-		if(cursor.moveToFirst()) 
-		{
-			do{
-				attendanceSessionId=(Integer.parseInt(cursor.getString(0)));
-				
-				String query1="SELECT * FROM attendance_table where attendance_session_id=" + attendanceSessionId+" order by attendance_student_id";
-				Cursor cursor1 = db.rawQuery(query1, null);
-				if(cursor1.moveToFirst()) 
-				{
-					do{
-						AttendanceBean attendanceBean = new AttendanceBean();
-						attendanceBean.setAttendance_session_id(Integer.parseInt(cursor1.getString(0)));
-						attendanceBean.setAttendance_student_id(cursor1.getString(1));
-						attendanceBean.setAttendance_status(cursor1.getString(2));
-						list.add(attendanceBean);
-
-					}while(cursor1.moveToNext());
-				}
-				
+		if (cursor.moveToFirst()) {
+			do {
 				AttendanceBean attendanceBean = new AttendanceBean();
-				attendanceBean.setAttendance_session_id(0);
-				attendanceBean.setAttendance_status("Date : " + cursor.getString(4));
+				attendanceBean.setAttendance_session_id(cursor.getLong(cursor.getColumnIndex(KEY_SESSION_ID)));
+				attendanceBean.setAttendance_student_id(cursor.getString(cursor.getColumnIndex(KEY_ATTENDANCE_STUDENT_ID)));
+				attendanceBean.setAttendance_status(cursor.getString(cursor.getColumnIndex(KEY_ATTENDANCE_STATUS)));
+				attendanceBean.setAttendance_session_date(cursor.getString(cursor.getColumnIndex(KEY_ATTENDANCE_SESSION_DATE)));
 				list.add(attendanceBean);
-				
-			}while(cursor.moveToNext());
+			} while (cursor.moveToNext());
 		}
-		
-		
+		cursor.close();
 		return list;
 	}
 	
@@ -803,8 +807,8 @@ public class DBAdapter extends SQLiteOpenHelper {
 	public void updateAttendanceWithSession(AttendanceBean attendanceBean, String session) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		
 		values.put(KEY_ATTENDANCE_STATUS, attendanceBean.getAttendance_status());
+		values.put(KEY_SESSION, session);
 
 		String whereClause = KEY_SESSION_ID + " = ? AND " + 
 						   KEY_ATTENDANCE_STUDENT_ID + " = ? AND " +
@@ -958,8 +962,8 @@ public class DBAdapter extends SQLiteOpenHelper {
 		int[] counts = new int[2]; // [present_count, total_count]
 		
 		String query = "SELECT " +
-					  "SUM(CASE WHEN a.attendance_status = 'P' THEN 1 ELSE 0 END) as present_count, " +
-					  "COUNT(*) as total_count " +
+					  "SUM(CASE WHEN a.attendance_status = 'P' THEN ast.number_of_classes ELSE 0 END) as present_count, " +
+					  "SUM(ast.number_of_classes) as total_count " +
 					  "FROM " + ATTENDANCE_TABLE + " a " +
 					  "JOIN " + ATTENDANCE_SESSION_TABLE + " ast ON a.attendance_session_id = ast.attendance_session_id " +
 					  "WHERE a.attendance_student_id = ? " +

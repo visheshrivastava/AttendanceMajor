@@ -45,6 +45,8 @@ import android.content.ContentValues;
 import android.provider.MediaStore;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import android.os.Build;
+import android.provider.Settings;
 
 public class ViewAttendanceByFacultyActivity extends Activity {
 
@@ -143,35 +145,61 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 			attendanceList.add(summaryInfo);
 		}
 
-		// Add separator
+		// Add detailed attendance
 		attendanceList.add("\nDetailed Attendance\n");
 
 		// Sort attendance by date first, then by enrollment number
 		Collections.sort(attendanceBeanList, new Comparator<AttendanceBean>() {
 			@Override
 			public int compare(AttendanceBean a1, AttendanceBean a2) {
-				int dateCompare = a2.getAttendance_session_date().compareTo(a1.getAttendance_session_date());
-				if (dateCompare != 0) return dateCompare;
-				return a1.getAttendance_student_id().compareTo(a2.getAttendance_student_id());
+				String date1 = a1.getAttendance_session_date();
+				String date2 = a2.getAttendance_session_date();
+
+				// Handle null values
+				if (date1 == null) date1 = "";
+				if (date2 == null) date2 = "";
+
+				// Sort in descending order (most recent first)
+				return date2.compareTo(date1);
 			}
 		});
 
-		// Add detailed attendance
 		String currentDate = null;
 		for(AttendanceBean attendanceBean : attendanceBeanList) {
-			if (currentDate == null || !currentDate.equals(attendanceBean.getAttendance_session_date())) {
-				currentDate = attendanceBean.getAttendance_session_date();
-				attendanceList.add("\nDate: " + currentDate + "\n");
+			String attendanceDate = attendanceBean.getAttendance_session_date();
+			String studentId = attendanceBean.getAttendance_student_id();
+			
+			if (attendanceDate == null || studentId == null) {
+				continue; // Skip invalid records
 			}
 
-			StudentBean studentBean = dbAdapter.getStudentById(attendanceBean.getAttendance_student_id());
+			if (currentDate == null || !currentDate.equals(attendanceDate)) {
+				currentDate = attendanceDate;
+				attendanceList.add("\nDate: " + currentDate);
+			}
+
+			StudentBean studentBean = dbAdapter.getStudentById(studentId);
+			if (studentBean == null) {
+				continue; // Skip if student not found
+			}
+
+			String firstName = studentBean.getStudent_firstname();
+			String lastName = studentBean.getStudent_lastname();
+			String enrollment = studentBean.getStudent_enrollment();
 			String status = attendanceBean.getAttendance_status();
+
+			// Handle null values
+			if (firstName == null) firstName = "";
+			if (lastName == null) lastName = "";
+			if (enrollment == null) enrollment = "No Enrollment";
+			if (status == null) status = "N/A";
+
 			String attendanceInfo = String.format(Locale.getDefault(),
-				"%s %s (%s) | %s",
-				studentBean.getStudent_firstname(),
-				studentBean.getStudent_lastname(),
-				studentBean.getStudent_enrollment(),
-				status);
+				"  %s %s (%s) | %s",  // Added indentation for better readability
+				firstName,
+				lastName,
+				enrollment,
+				status);  // Keep original status (P/A) for color coding
 			
 			attendanceList.add(attendanceInfo);
 		}
@@ -186,11 +214,7 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 		exportButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (checkPermission()) {
-					exportToCSV();
-				} else {
-					requestPermission();
-				}
+				checkPermissions();
 			}
 		});
 	}
@@ -227,199 +251,191 @@ public class ViewAttendanceByFacultyActivity extends Activity {
 		return true;
 	}
 
-	private boolean checkPermission() {
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-			int result = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-			return result == PackageManager.PERMISSION_GRANTED;
-		}
-		return true;
-	}
-
-	private void requestPermission() {
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-			// Check if we already have permission
-			if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-				// Show explanation if needed
-				if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setTitle("Storage Permission Needed");
-					builder.setMessage("This permission is required to save the attendance CSV file.");
-					builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							requestPermissions(
-								new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-								PERMISSION_REQUEST_CODE
-							);
-						}
-					});
-					builder.show();
-				} else {
-					// No explanation needed, request the permission
-					requestPermissions(
-						new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-						PERMISSION_REQUEST_CODE
-					);
-				}
-			} else {
+	private void checkPermissions() {
+		Log.d("ExportCSV", "Checking permissions");
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			// For Android 11 and above
+			if (Environment.isExternalStorageManager()) {
+				Log.d("ExportCSV", "Storage permission already granted");
 				exportToCSV();
+			} else {
+				Log.d("ExportCSV", "Requesting storage permission");
+				try {
+					Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+					intent.addCategory("android.intent.category.DEFAULT");
+					intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+					startActivityForResult(intent, 2296);
+				} catch (Exception e) {
+					Intent intent = new Intent();
+					intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+					startActivityForResult(intent, 2296);
+				}
 			}
 		} else {
-			exportToCSV();
+			// For Android 10 and below
+			if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+				== PackageManager.PERMISSION_GRANTED) {
+				Log.d("ExportCSV", "Storage permission already granted");
+				exportToCSV();
+			} else {
+				Log.d("ExportCSV", "Requesting storage permission");
+				ActivityCompat.requestPermissions(this,
+					new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+					PERMISSION_REQUEST_CODE);
+			}
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == 2296) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+				if (Environment.isExternalStorageManager()) {
+					Log.d("ExportCSV", "Storage permission granted");
+					exportToCSV();
+				} else {
+					Log.e("ExportCSV", "Storage permission denied");
+					Toast.makeText(this, "Storage permission is required to export attendance", 
+						Toast.LENGTH_LONG).show();
+				}
+			}
 		}
 	}
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		Log.d("ExportCSV", "Permission result received");
+		
 		if (requestCode == PERMISSION_REQUEST_CODE) {
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Log.d("ExportCSV", "Storage permission granted");
 				exportToCSV();
 			} else {
-				Toast.makeText(this, 
-					"Storage permission is required to export attendance", 
+				Log.e("ExportCSV", "Storage permission denied");
+				Toast.makeText(this, "Storage permission is required to export attendance", 
 					Toast.LENGTH_LONG).show();
 				
-				// Show settings dialog if permission was permanently denied
-				if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setTitle("Permission Required");
-					builder.setMessage("Storage permission is required but has been permanently denied. " +
-									"Please enable it in Settings.");
-					builder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// Open app settings
-							Intent intent = new Intent();
-							intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-							Uri uri = Uri.fromParts("package", getPackageName(), null);
-							intent.setData(uri);
-							startActivity(intent);
-						}
-					});
-					builder.setNegativeButton("Cancel", null);
-					builder.show();
-				}
+				// Show explanation and settings option
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle("Permission Required");
+				builder.setMessage("Storage permission is required to save the attendance CSV file. " +
+					"Please grant the permission in Settings.");
+				builder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+						Uri uri = Uri.fromParts("package", getPackageName(), null);
+						intent.setData(uri);
+						startActivity(intent);
+					}
+				});
+				builder.setNegativeButton("Cancel", null);
+				builder.show();
 			}
 		}
 	}
 
 	private void exportToCSV() {
+		Log.d("ExportCSV", "Starting export process");
+		
+		if (attendanceBeanList == null || attendanceBeanList.isEmpty()) {
+			Log.e("ExportCSV", "No attendance data to export");
+			Toast.makeText(this, "No attendance data to export", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		Log.d("ExportCSV", "Found " + attendanceBeanList.size() + " attendance records");
+
 		try {
-			String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", 
-				Locale.getDefault()).format(new Date());
-			String fileName = "attendance_" + selectedSubject + "_" + timeStamp + ".csv";
+			// Create CSV file
+			String fileName = "Attendance_" + selectedSubject + "_" + 
+				new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date()) + ".csv";
+			File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+			
+			Log.d("ExportCSV", "Creating file at: " + file.getAbsolutePath());
+			
+			FileWriter writer = new FileWriter(file);
+			
+			// Write header
+			writer.append("Subject," + selectedSubject + "\n");
+			writer.append("Session," + currentSession + "\n\n");
+			
+			// Write Summary Section
+			writer.append("ATTENDANCE SUMMARY\n");
+			writer.append("\"Student Name\",\"Enrollment\",\"Present\",\"Total\",\"Percentage\"\n");
+			Log.d("ExportCSV", "Wrote summary header");
 
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-				ContentValues values = new ContentValues();
-				values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
-				values.put(MediaStore.MediaColumns.MIME_TYPE, "text/csv");
-				values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+			// Write summary data
+			for(StudentBean student : sortedStudents) {
+				int[] totalCounts = dbAdapter.getTotalAttendanceCount(
+					student.getStudent_enrollment(), 
+					selectedSubject, 
+					currentSession
+				);
+				
+				float percentage = (totalCounts[1] > 0) ? (totalCounts[0] * 100.0f / totalCounts[1]) : 0;
+				
+				String summaryLine = String.format(Locale.getDefault(), "\"%s %s\",\"%s\",\"%d\",\"%d\",\"%.1f%%\"\n",
+					student.getStudent_firstname(),
+					student.getStudent_lastname(),
+					student.getStudent_enrollment(),
+					totalCounts[0],
+					totalCounts[1],
+					percentage);
+				
+				writer.append(summaryLine);
+				Log.d("ExportCSV", "Wrote summary line: " + summaryLine.trim());
+			}
 
-				Uri uri = getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
-				if (uri != null) {
-					try (OutputStream outputStream = getContentResolver().openOutputStream(uri);
-						 OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+			// Write Detailed Attendance Section
+			writer.append("\nDETAILED ATTENDANCE\n");
+			writer.append("\"Date\",\"Student Name\",\"Enrollment\",\"Status\"\n");
+			Log.d("ExportCSV", "Wrote detailed attendance header");
 
-						// Write summary section
-						writer.write("Attendance Summary for " + selectedSubject + "\n\n");
-						writer.write("Name,Enrollment,Present,Total,Percentage\n");
+			// Sort attendance by date first, then by enrollment number
+			Collections.sort(attendanceBeanList, new Comparator<AttendanceBean>() {
+				@Override
+				public int compare(AttendanceBean a1, AttendanceBean a2) {
+					String date1 = a1.getAttendance_session_date();
+					String date2 = a2.getAttendance_session_date();
 
-						// Get unique students and their attendance counts
-						for (StudentBean student : sortedStudents) {
-							int[] totalCounts = dbAdapter.getTotalAttendanceCount(
-								student.getStudent_enrollment(), 
-								selectedSubject, 
-								currentSession
-							);
-							
-							double percentage = totalCounts[1] > 0 ? 
-								(totalCounts[0] * 100.0 / totalCounts[1]) : 0;
+					if (date1 == null) date1 = "";
+					if (date2 == null) date2 = "";
 
-							writer.write(String.format("%s %s,%s,%d,%d,%.1f%%\n",
-								student.getStudent_firstname(),
-								student.getStudent_lastname(),
-								student.getStudent_enrollment(),
-								totalCounts[0],
-								totalCounts[1],
-								percentage));
-						}
-
-						// Write detailed section
-						writer.write("\nDetailed Attendance\n");
-						writer.write("Date,Name,Enrollment,Status\n");
-
-						for (AttendanceBean attendance : attendanceBeanList) {
-							StudentBean student = dbAdapter.getStudentById(
-								attendance.getAttendance_student_id());
-							
-							writer.write(String.format("%s,%s %s,%s,%s\n",
-								attendance.getAttendance_session_date(),
-								student.getStudent_firstname(),
-								student.getStudent_lastname(),
-								student.getStudent_enrollment(),
-								attendance.getAttendance_status()));
-						}
-
-						writer.flush();
-						Toast.makeText(this, "File exported to Downloads/" + fileName, 
-							Toast.LENGTH_LONG).show();
-					}
+					return date2.compareTo(date1);
 				}
-			} else {
-				// For older Android versions
-				File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-				File file = new File(downloadsDir, fileName);
+			});
 
-				try (FileWriter writer = new FileWriter(file)) {
-					// Write summary section
-					writer.append("Attendance Summary for " + selectedSubject + "\n\n");
-					writer.append("Name,Enrollment,Present,Total,Percentage\n");
-
-					// Get unique students and their attendance counts
-					for (StudentBean student : sortedStudents) {
-						int[] totalCounts = dbAdapter.getTotalAttendanceCount(
-							student.getStudent_enrollment(), 
-							selectedSubject, 
-							currentSession
-						);
-						
-						double percentage = totalCounts[1] > 0 ? 
-							(totalCounts[0] * 100.0 / totalCounts[1]) : 0;
-
-						writer.append(String.format("%s %s,%s,%d,%d,%.1f%%\n",
-							student.getStudent_firstname(),
-							student.getStudent_lastname(),
-							student.getStudent_enrollment(),
-							totalCounts[0],
-							totalCounts[1],
-							percentage));
-					}
-
-					// Write detailed section
-					writer.append("\nDetailed Attendance\n");
-					writer.append("Date,Name,Enrollment,Status\n");
-
-					for (AttendanceBean attendance : attendanceBeanList) {
-						StudentBean student = dbAdapter.getStudentById(
-							attendance.getAttendance_student_id());
-						
-						writer.append(String.format("%s,%s %s,%s,%s\n",
-							attendance.getAttendance_session_date(),
-							student.getStudent_firstname(),
-							student.getStudent_lastname(),
-							student.getStudent_enrollment(),
-							attendance.getAttendance_status()));
-					}
-
-					writer.flush();
-					Toast.makeText(this, "Exported to " + file.getAbsolutePath(), 
-						Toast.LENGTH_LONG).show();
+			// Write detailed attendance data
+			for (AttendanceBean attendance : attendanceBeanList) {
+				StudentBean student = dbAdapter.getStudentById(attendance.getAttendance_student_id());
+				if (student != null) {
+					String line = String.format(Locale.getDefault(), "\"%s\",\"%s %s\",\"%s\",\"%s\"\n",
+						attendance.getAttendance_session_date(),
+						student.getStudent_firstname(),
+						student.getStudent_lastname(),
+						student.getStudent_enrollment(),
+						attendance.getAttendance_status());
+					
+					writer.append(line);
+					Log.d("ExportCSV", "Wrote detailed line: " + line.trim());
+				} else {
+					Log.w("ExportCSV", "Student not found for ID: " + attendance.getAttendance_student_id());
 				}
 			}
+
+			writer.flush();
+			writer.close();
+			
+			Log.d("ExportCSV", "File written successfully");
+			Toast.makeText(this, "Attendance exported to " + fileName, Toast.LENGTH_LONG).show();
+			
 		} catch (IOException e) {
-			e.printStackTrace();
-			Toast.makeText(this, "Export failed: " + e.getMessage(), 
-				Toast.LENGTH_SHORT).show();
+			Log.e("ExportCSV", "Error exporting to CSV", e);
+			Toast.makeText(this, "Error exporting attendance: " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 

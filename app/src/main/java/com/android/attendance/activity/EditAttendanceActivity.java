@@ -1,5 +1,11 @@
 package com.android.attendance.activity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -7,109 +13,134 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.attendance.bean.AttendanceBean;
 import com.android.attendance.bean.AttendanceSessionBean;
 import com.android.attendance.bean.StudentBean;
+import com.android.attendance.context.ApplicationContext;
 import com.android.attendance.db.DBAdapter;
 import com.example.androidattendancesystem.R;
 import com.android.attendance.adapter.ColoredAttendanceAdapter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 public class EditAttendanceActivity extends Activity {
 
-    private ListView attendanceListView;
+    private ListView listView;
     private ArrayAdapter<String> listAdapter;
-    private Button updateAttendanceButton;
+    private String currentSession;
     private AttendanceSessionBean sessionBean;
-    private ArrayList<StudentBean> studentBeanList;
+    private DBAdapter dbAdapter;
     private ArrayList<AttendanceBean> attendanceBeanList;
+    private ArrayList<StudentBean> studentBeanList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_attendance);
+        setContentView(R.layout.view_attendance_list);
 
-        attendanceListView = findViewById(R.id.attendanceListView);
-        updateAttendanceButton = findViewById(R.id.updateAttendanceButton);
-        
-        // Get the session bean from intent
+        // Get session bean and current session from intent
         sessionBean = (AttendanceSessionBean) getIntent().getSerializableExtra("sessionBean");
-        if (sessionBean == null) {
-            Toast.makeText(this, "Error: No session information", Toast.LENGTH_SHORT).show();
+        currentSession = getIntent().getStringExtra("session");
+        
+        if (sessionBean == null || currentSession == null) {
+            Toast.makeText(this, "Invalid session data", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        // Get attendance records for this session
-        DBAdapter dbAdapter = new DBAdapter(this);
-        attendanceBeanList = dbAdapter.getAttendanceBySessionID(sessionBean);
+        // Initialize UI elements
+        listView = findViewById(R.id.listview);
+        TextView dateHeaderTextView = findViewById(R.id.dateHeaderTextView);
+        dbAdapter = new DBAdapter(this);
         
-        // Get student list
-        studentBeanList = new ArrayList<>();
-        for (AttendanceBean attendance : attendanceBeanList) {
-            StudentBean student = dbAdapter.getStudentById(attendance.getAttendance_student_id());
-            studentBeanList.add(student);
-        }
+        // Set header with date and subject
+        dateHeaderTextView.setText(String.format(Locale.getDefault(),
+            "Edit Attendance - %s\nSubject: %s",
+            sessionBean.getAttendance_session_date(),
+            sessionBean.getAttendance_session_subject()));
 
-        // Sort studentBeanList by enrollment number
-        Collections.sort(studentBeanList, new Comparator<StudentBean>() {
+        // Get all students for this branch and year
+        studentBeanList = dbAdapter.getAllStudentByBranchYear(
+            sessionBean.getAttendance_session_department(),
+            sessionBean.getAttendance_session_class()
+        );
+
+        // Get attendance records for this session
+        attendanceBeanList = dbAdapter.getAttendanceBySessionIDAndSession(
+            sessionBean.getAttendance_session_id(),
+            currentSession
+        );
+
+        // Create a map of student IDs to attendance status
+        ArrayList<String> attendanceList = new ArrayList<>();
+        attendanceList.add("Edit Attendance\n");
+
+        // Sort attendance records by student enrollment
+        Collections.sort(attendanceBeanList, new Comparator<AttendanceBean>() {
             @Override
-            public int compare(StudentBean s1, StudentBean s2) {
-                String e1 = s1.getStudent_enrollment() != null ? s1.getStudent_enrollment() : "";
-                String e2 = s2.getStudent_enrollment() != null ? s2.getStudent_enrollment() : "";
-                return e1.compareTo(e2);
+            public int compare(AttendanceBean a1, AttendanceBean a2) {
+                return a1.getAttendance_student_id().compareTo(a2.getAttendance_student_id());
             }
         });
 
-        // Create list items with checkboxes
-        ArrayList<String> studentList = new ArrayList<>();
-        for (int i = 0; i < studentBeanList.size(); i++) {
-            StudentBean student = studentBeanList.get(i);
-            AttendanceBean attendance = attendanceBeanList.get(i);
-            String status = attendance.getAttendance_status();
-            String studentInfo = String.format("%s %s (%s) | %s",
-                student.getStudent_firstname(),
-                student.getStudent_lastname(),
-                student.getStudent_enrollment(),
-                status);
-            studentList.add(studentInfo);
+        // Add each attendance record
+        for (AttendanceBean attendance : attendanceBeanList) {
+            StudentBean student = dbAdapter.getStudentById(attendance.getAttendance_student_id());
+            if (student != null) {
+                String attendanceInfo = String.format(Locale.getDefault(),
+                    "%s %s (%s) | %s",
+                    student.getStudent_firstname(),
+                    student.getStudent_lastname(),
+                    student.getStudent_enrollment(),
+                    attendance.getAttendance_status());
+
+                attendanceList.add(attendanceInfo);
+            }
         }
 
-        // Set up ListView with multiple choice
-        listAdapter = new ColoredAttendanceAdapter(this, 
-            android.R.layout.simple_list_item_multiple_choice,
-            android.R.id.text1,
-            studentList);
-        attendanceListView.setAdapter(listAdapter);
-        attendanceListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        // Set up the list adapter with color coding
+        listAdapter = new ColoredAttendanceAdapter(this,
+            R.layout.view_attendance_list_per_student,
+            R.id.labelAttendancePerStudent,
+            attendanceList);
+        listView.setAdapter(listAdapter);
 
-        // Set initial checkbox states
-        for (int i = 0; i < attendanceBeanList.size(); i++) {
-            attendanceListView.setItemChecked(i, 
-                attendanceBeanList.get(i).getAttendance_status().equals("P"));
-        }
+        // Handle item clicks to toggle attendance status
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) return; // Skip header
 
-        // Handle update button click
-        updateAttendanceButton.setOnClickListener(new View.OnClickListener() {
+                AttendanceBean attendance = attendanceBeanList.get(position - 1);
+                String currentStatus = attendance.getAttendance_status();
+
+                // Toggle status
+                String newStatus = currentStatus.equals("P") ? "A" : "P";
+                attendance.setAttendance_status(newStatus);
+                
+                // Update attendance record
+                dbAdapter.updateAttendanceWithSession(attendance, currentSession);
+
+                // Update the list
+                StudentBean student = dbAdapter.getStudentById(attendance.getAttendance_student_id());
+                String attendanceInfo = String.format(Locale.getDefault(),
+                    "%s %s (%s) | %s",
+                    student.getStudent_firstname(),
+                    student.getStudent_lastname(),
+                    student.getStudent_enrollment(),
+                    newStatus);
+
+                attendanceList.set(position, attendanceInfo);
+                listAdapter.notifyDataSetChanged();
+            }
+        });
+
+        // Add back button
+        Button backButton = findViewById(R.id.buttonBack);
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DBAdapter dbAdapter = new DBAdapter(EditAttendanceActivity.this);
-                
-                // Update attendance status for each student
-                for (int i = 0; i < studentBeanList.size(); i++) {
-                    AttendanceBean attendance = attendanceBeanList.get(i);
-                    attendance.setAttendance_status(attendanceListView.isItemChecked(i) ? "P" : "A");
-                    dbAdapter.updateAttendance(attendance);
-                }
-
-                Toast.makeText(EditAttendanceActivity.this, 
-                    "Attendance updated successfully", 
-                    Toast.LENGTH_SHORT).show();
                 finish();
             }
         });

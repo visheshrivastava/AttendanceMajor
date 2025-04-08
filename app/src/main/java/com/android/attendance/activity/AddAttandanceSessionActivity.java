@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import com.android.attendance.bean.AttendanceBean;
 import com.android.attendance.bean.AttendanceSessionBean;
@@ -49,6 +50,7 @@ public class AddAttandanceSessionActivity extends Activity {
 	private int month;
 	private int dyear;
 	private EditText dateEditText;
+	private EditText classesEditText;
 	Button submit;
 	Button viewAttendance;
 	Button viewTotalAttendance;
@@ -81,7 +83,7 @@ public class AddAttandanceSessionActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.add_attandance);
+		setContentView(R.layout.add_attendance_session);
 
 		// Get the current session from intent
 		currentSession = getIntent().getStringExtra("session");
@@ -97,8 +99,12 @@ public class AddAttandanceSessionActivity extends Activity {
 		spinnerSubject = (Spinner)findViewById(R.id.spinnerSE);
 		date = (ImageButton) findViewById(R.id.DateImageButton);
 		dateEditText = (EditText) findViewById(R.id.DateEditText);
+		classesEditText = (EditText) findViewById(R.id.classesEditText);
 		submit = (Button)findViewById(R.id.buttonsubmit);
 		viewAttendance = (Button)findViewById(R.id.viewAttendancebutton);
+		Button editAttendance = (Button)findViewById(R.id.editAttendanceButton);
+		Button importCsv = (Button)findViewById(R.id.importCsvButton);
+		Button viewShortAttendance = (Button)findViewById(R.id.viewShortAttendanceButton);
 		logoutButton = (Button)findViewById(R.id.buttonlogout);
 
 		// Set up branch spinner
@@ -117,6 +123,141 @@ public class AddAttandanceSessionActivity extends Activity {
 		month = cal.get(Calendar.MONTH);
 		dyear = cal.get(Calendar.YEAR);
 		dateEditText.setText(day + "/" + (month + 1) + "/" + dyear);
+
+		// Set default value for classes
+		classesEditText.setText("1");
+
+		// Set up click listeners for all buttons
+		viewShortAttendance.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Get faculty's assigned subjects
+				FacultyBean facultyBean = ((ApplicationContext)getApplicationContext()).getFacultyBean();
+				if (facultyBean != null) {
+					Intent intent = new Intent(AddAttandanceSessionActivity.this, ViewShortAttendanceActivity.class);
+					intent.putExtra("session", currentSession);
+					intent.putExtra("subject", subject);
+					startActivity(intent);
+				} else {
+					Toast.makeText(AddAttandanceSessionActivity.this, 
+						"Faculty information not found", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+
+		importCsv.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+				intent.addCategory(Intent.CATEGORY_OPENABLE);
+				intent.setType("text/*");
+				startActivityForResult(intent, READ_REQUEST_CODE);
+			}
+		});
+
+		editAttendance.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Get faculty's assigned subjects
+				FacultyBean facultyBean = ((ApplicationContext)getApplicationContext()).getFacultyBean();
+				if (facultyBean != null) {
+					if (subject == null) {
+						Toast.makeText(AddAttandanceSessionActivity.this,
+							"Please select a subject", Toast.LENGTH_SHORT).show();
+						return;
+					}
+
+					// Get the selected date from the DateEditText
+					String selectedDate = dateEditText.getText().toString();
+					if (selectedDate.isEmpty()) {
+						Toast.makeText(AddAttandanceSessionActivity.this,
+							"Please select a date", Toast.LENGTH_SHORT).show();
+						return;
+					}
+
+					DBAdapter dbAdapter = new DBAdapter(AddAttandanceSessionActivity.this);
+					ArrayList<AttendanceSessionBean> sessionList = dbAdapter.getAllAttendanceSession();
+					
+					// Find session for selected date, subject, branch and year
+					AttendanceSessionBean selectedSession = null;
+					for (AttendanceSessionBean session : sessionList) {
+						if (session.getAttendance_session_faculty_id() == facultyBean.getFaculty_id() &&
+							session.getAttendance_session_subject().equals(subject) &&
+							session.getAttendance_session_department().equals(branch) &&
+							session.getAttendance_session_class().equals(year) &&
+							session.getAttendance_session_date().equals(selectedDate)) {
+							selectedSession = session;
+							break;
+						}
+					}
+
+					if (selectedSession != null) {
+						// Launch edit attendance activity
+						Intent intent = new Intent(AddAttandanceSessionActivity.this, 
+							EditAttendanceActivity.class);
+						intent.putExtra("sessionBean", selectedSession);
+						intent.putExtra("session", currentSession);
+						startActivity(intent);
+					} else {
+						Toast.makeText(AddAttandanceSessionActivity.this,
+							"No attendance found for selected date", 
+							Toast.LENGTH_SHORT).show();
+					}
+				} else {
+					Toast.makeText(AddAttandanceSessionActivity.this, 
+						"Faculty information not found", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+
+		viewAttendance.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Get faculty's assigned subjects
+				FacultyBean facultyBean = ((ApplicationContext)getApplicationContext()).getFacultyBean();
+				if (facultyBean != null) {
+					if (subject == null) {
+						Toast.makeText(AddAttandanceSessionActivity.this,
+							"Please select a subject", Toast.LENGTH_SHORT).show();
+						return;
+					}
+
+					DBAdapter dbAdapter = new DBAdapter(AddAttandanceSessionActivity.this);
+					ArrayList<AttendanceSessionBean> sessionList = dbAdapter.getAllAttendanceSession();
+					ArrayList<AttendanceBean> attendanceBeanList = new ArrayList<AttendanceBean>();
+
+					// Filter sessions for current faculty and subject
+					for (AttendanceSessionBean session : sessionList) {
+						if (session.getAttendance_session_faculty_id() == facultyBean.getFaculty_id() &&
+							session.getAttendance_session_subject().equals(subject) &&
+							session.getAttendance_session_department().equals(branch) &&
+							session.getAttendance_session_class().equals(year)) {
+							
+							ArrayList<AttendanceBean> sessionAttendance = dbAdapter.getAttendanceBySessionIDAndSession(
+								session.getAttendance_session_id(), currentSession);
+							attendanceBeanList.addAll(sessionAttendance);
+						}
+					}
+
+					((ApplicationContext)getApplicationContext()).setAttendanceBeanList(attendanceBeanList);
+
+					Intent intent = new Intent(AddAttandanceSessionActivity.this, ViewAttendanceByFacultyActivity.class);
+					intent.putExtra("session", currentSession);
+					intent.putExtra("subject", subject);
+					startActivity(intent);
+				} else {
+					Toast.makeText(AddAttandanceSessionActivity.this, 
+						"Faculty information not found", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+
+		logoutButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showLogoutConfirmationDialog();
+			}
+		});
 
 		// Set up listeners
 		spinnerbranch.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -159,6 +300,24 @@ public class AddAttandanceSessionActivity extends Activity {
 					return;
 				}
 
+				// Get number of classes
+				int numberOfClasses = 1;
+				try {
+					String classesText = classesEditText.getText().toString();
+					if (!TextUtils.isEmpty(classesText)) {
+						numberOfClasses = Integer.parseInt(classesText);
+						if (numberOfClasses < 1) {
+							Toast.makeText(AddAttandanceSessionActivity.this,
+								"Number of classes must be at least 1", Toast.LENGTH_SHORT).show();
+							return;
+						}
+					}
+				} catch (NumberFormatException e) {
+					Toast.makeText(AddAttandanceSessionActivity.this,
+						"Please enter a valid number of classes", Toast.LENGTH_SHORT).show();
+					return;
+				}
+
 				AttendanceSessionBean attendanceSessionBean = new AttendanceSessionBean();
 				FacultyBean bean = ((ApplicationContext)AddAttandanceSessionActivity.this.getApplicationContext()).getFacultyBean();
 
@@ -167,6 +326,7 @@ public class AddAttandanceSessionActivity extends Activity {
 				attendanceSessionBean.setAttendance_session_class(year);
 				attendanceSessionBean.setAttendance_session_date(dateEditText.getText().toString());
 				attendanceSessionBean.setAttendance_session_subject(subject);
+				attendanceSessionBean.setNumberOfClasses(numberOfClasses);
 
 				DBAdapter dbAdapter = new DBAdapter(AddAttandanceSessionActivity.this);
 				long sessionId = dbAdapter.addAttendanceSession(attendanceSessionBean, currentSession);
@@ -186,18 +346,12 @@ public class AddAttandanceSessionActivity extends Activity {
 					Intent intent = new Intent(AddAttandanceSessionActivity.this, AddAttendanceActivity.class);
 					intent.putExtra("sessionId", sessionId);
 					intent.putExtra("session", currentSession);
+					intent.putExtra("numberOfClasses", numberOfClasses);
 					startActivity(intent);
 				} else {
 					Toast.makeText(AddAttandanceSessionActivity.this, 
 						"Failed to create attendance session", Toast.LENGTH_SHORT).show();
 				}
-			}
-		});
-
-		logoutButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				showLogoutConfirmationDialog();
 			}
 		});
 
@@ -309,5 +463,66 @@ public class AddAttandanceSessionActivity extends Activity {
 	public void onBackPressed() {
 		// Don't do anything when back is pressed
 		// This prevents accidental logout
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+			if (data != null) {
+				Uri uri = data.getData();
+				try {
+					InputStream inputStream = getContentResolver().openInputStream(uri);
+					BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+					String line;
+					DBAdapter dbAdapter = new DBAdapter(this);
+					int successCount = 0;
+					int failureCount = 0;
+
+					while ((line = reader.readLine()) != null) {
+						String[] values = line.split(",");
+						if (values.length >= 6) { // Ensure we have all required fields
+							StudentBean studentBean = new StudentBean();
+							studentBean.setStudent_firstname(values[0].trim());
+							studentBean.setStudent_lastname(values[1].trim());
+							studentBean.setStudent_mobilenumber(values[2].trim());
+							studentBean.setStudent_address(values[3].trim());
+							studentBean.setStudent_department(values[4].trim());
+							studentBean.setStudent_class(values[5].trim());
+							
+							// Set enrollment number if available
+							if (values.length > 6) {
+								studentBean.setStudent_enrollment(values[6].trim());
+							}
+
+							// Check if student with this enrollment number already exists
+							if (studentBean.getStudent_enrollment() != null && 
+								!studentBean.getStudent_enrollment().isEmpty() &&
+								dbAdapter.isEnrollmentExists(studentBean.getStudent_enrollment())) {
+								failureCount++;
+								continue;
+							}
+
+							// Add student to database
+							if (dbAdapter.addStudent(studentBean) != -1) {
+								successCount++;
+							} else {
+								failureCount++;
+							}
+						}
+					}
+					reader.close();
+					inputStream.close();
+
+					String message = String.format("Successfully added %d students. %d failed.", 
+						successCount, failureCount);
+					Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					Toast.makeText(this, "Error reading CSV file: " + e.getMessage(), 
+						Toast.LENGTH_LONG).show();
+				}
+			}
+		}
 	}
 }
